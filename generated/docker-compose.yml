@@ -1,0 +1,3 @@
+version: '3.3'
+services:
+    steamcache-dns: { image: 'steamcache/steamcache-dns:latest', container_name: game-cache-steamcache-dns }
