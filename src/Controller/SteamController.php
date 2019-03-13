@@ -10,15 +10,21 @@ use Symfony\Component\Routing\Annotation\Route;
 use ApiPlatform\Core\Serializer\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-
+use App\Service\DockerService;
 
 class SteamController extends AbstractController
 {
     /**
      * @Route("/steam", name="steam")
      */
-    public function index()
+    public function index(DockerService $docker)
     {
+        // var_dump($docker->getContainers());
+        // var_dump($docker->stopContainers());
+        var_dump($docker->removeContainers());
+        // var_dump($docker->dockerComposeUp());
+        die;
+
         return $this->render('steam/index.html.twig', [
             'controller_name' => 'SteamController',
         ]);

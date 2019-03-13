@@ -1,3 +1,8 @@
 version: '3.3'
 services:
     steamcache-dns: { image: 'steamcache/steamcache-dns:latest', container_name: game-cache-steamcache-dns }
+    ser_b574f08e6762de6cd29c7508e28a29e6: { image: 'steamcache/monolithic:latest', container_name: steamcache-game-49610, environment: [PUID=1000, PGID=1000, TZ=Europe/Berlin], volumes: [vol_b574f08e6762de6cd29c7508e28a29e6], depends_on: [steamcache-dns], restart: unless-stopped }
+    ser_b0287db6f78df4f537571b62f49745e1: { image: 'steamcache/monolithic:latest', container_name: steamcache-game-49620, environment: [PUID=1000, PGID=1000, TZ=Europe/Berlin], volumes: [vol_b0287db6f78df4f537571b62f49745e1], depends_on: [steamcache-dns], restart: unless-stopped }
+volumes:
+    vol_b574f08e6762de6cd29c7508e28a29e6: {  }
+    vol_b0287db6f78df4f537571b62f49745e1: {  }

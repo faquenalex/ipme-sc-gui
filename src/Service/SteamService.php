@@ -6,6 +6,7 @@ use App\Entity\Service;
 use App\Entity\CachedElement;
 use App\Entity\CachedElementMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\DockerService;
 
 class SteamService
 {
@@ -14,13 +15,15 @@ class SteamService
      */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $EntityManager)
+    /**
+     * @var DockerService
+     */
+    private $docker;
+
+    public function __construct(EntityManagerInterface $EntityManager, DockerService $docker)
     {
         $this->entityManager = $EntityManager;
-    }
-
-    public function searchByName(string $name)
-    {
+        $this->docker = $docker;
     }
 
     /**
@@ -34,6 +37,7 @@ class SteamService
     public function addGameBySteamId(string $steamId, bool $forceDownload = false)
     {
         $game = new CachedElement();
+
         $game->setName($steamId);
         $game->setDockerName("steamcache-game-" . $steamId);
         $game->setDateCreated(new \Datetime);
@@ -44,7 +48,11 @@ class SteamService
         $this->entityManager->persist($game);
         $this->entityManager->flush();
 
-        // shell_exec(steamCMD)
+        $this->docker->generateDockerCompose();
+        $this->docker->restartContainers();
+        $this->docker->dockerComposeUp();
+
+        // shell_exec("steamCMD")
 
         return true;
     }
@@ -55,12 +63,29 @@ class SteamService
      */
     public function removeGameById(string $steamId)
     {
-        $cachedElement = $this->entityManager->getRepository(CachedElement::class)->findOneByName($steamId);
+        $cachedElement = $this->entityManager
+            ->getRepository(CachedElement::class)->findOneByName($steamId);
+
         $this->entityManager->remove($cachedElement);
         $this->entityManager->flush();
+
+        $this->docker->generateDockerCompose();
+        $this->docker->restartContainers();
+        $this->docker->dockerComposeUp();
 
         // shell_exec(steamCMD)
 
         return true;
+    }
+
+    /**
+     * [getCachedElements description]
+     * @return array[CachedElement]
+     */
+    public function getCachedElements(): array
+    {
+        return $this->entityManager
+            ->getRepository(CachedElement::class)
+            ->findBy([], ['name' => 'ASC']);
     }
 }
