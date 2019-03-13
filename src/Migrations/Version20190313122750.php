@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20190308124038 extends AbstractMigration
+final class Version20190313122750 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,7 +22,7 @@ final class Version20190308124038 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE cached_element ADD name VARCHAR(255) NOT NULL, ADD date_created DATETIME DEFAULT NULL, ADD service_id INT NOT NULL, DROP date_create, CHANGE date_update date_update DATETIME DEFAULT NULL, CHANGE docker_id docker_name VARCHAR(255) NOT NULL');
+        $this->addSql('ALTER TABLE cached_element DROP metadatas');
     }
 
     public function down(Schema $schema) : void
@@ -30,6 +30,6 @@ final class Version20190308124038 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE cached_element ADD docker_id VARCHAR(255) NOT NULL COLLATE utf8mb4_unicode_ci, ADD date_create DATETIME NOT NULL, DROP docker_name, DROP name, DROP date_created, DROP service_id, CHANGE date_update date_update DATETIME NOT NULL');
+        $this->addSql('ALTER TABLE cached_element ADD metadatas INT NOT NULL');
     }
 }

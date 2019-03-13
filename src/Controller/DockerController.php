@@ -6,7 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Yaml\Yaml;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Service;
+use App\Entity\CachedElement;
+use App\Service\DockerService;
+use Symfony\Component\HttpFoundation\Response;
 
 class DockerController extends AbstractController
 {
@@ -15,9 +19,11 @@ class DockerController extends AbstractController
      */
     public function index()
     {
-        return $this->render('docker/index.html.twig', [
-            'controller_name' => 'DockerController',
-        ]);
+        $data = shell_exec('RET=`docker ps -a`;echo $RET');
+        return new JsonResponse([
+                $data
+            ]
+        );
     }
 
     /**
@@ -35,50 +41,14 @@ class DockerController extends AbstractController
     /**
      * @Route("/docker/regenerate-docker-compose", name="docker_regenerate-docker-compose")
      */
-    public function regenerateDockerComposeFile()
+    public function regenerateDockerComposeFile(DockerService $docker)
     {
-        $dockerCompose = [
-            'version' => '3.3',
-            'services' => [
-                'steamcache-dns' => [
-                    'image' => 'steamcache/steamcache-dns:latest',
-                    'container_name' => 'game-cache-steamcache-dns',
-                ]
-            ]
-        ];
-
-        $dockerVM = array_filter(
-            explode(" ", shell_exec('RET=`docker ps -aq `;echo $RET')),
-            function($a) {
-                return empty($a);
-            }
+        $elements = $docker->generateDockerCompose(
+            $this->getDoctrine()->getRepository(CachedElement::class)->findAll()
         );
 
-        foreach ($dockerVM as $key => $vm) {
-            $vmId = uniqid();
-
-            $dockerCompose['volumes']['vol_' . $vmId] = [];
-            $dockerCompose['services']['ser_' . $vmId] = [
-                'image' => 'steamcache/monolithic:latest',
-                'container_name' => 'game-cache-' . $vmId,
-                'environment' => [
-                    // 'PUID=1000',
-                    // 'PGID=1000',
-                    // 'TZ=Europe/Paris',
-                ],
-                'volumes' => ['vol_' . $vmId],
-                'depends_on' => ['game-cache-steamcache-dns'],
-                'restart' => 'unless-stopped',
-            ];
-        }
-
-        file_put_contents(
-            "/var/www/steamcache/generated/docker-compose.yml",
-            Yaml::dump($dockerCompose)
-        );
-
-        return new JsonResponse(
-            $dockerCompose
-        );
+        return $this->render('docker/regenerate-docker-compose.html.twig', [
+            'docker_services_list' => $elements,
+        ]);
     }
 }

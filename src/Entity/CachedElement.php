@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
+use App\Repository\CachedElementMetadataRepository;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CachedElementRepository")
@@ -13,34 +15,54 @@ class CachedElement
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @var string
      */
     private $dockerName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @var string
      */
     private $name;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     *
+     * @var Datetime
      */
     private $dateUpdate;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     *
+     * @var Datetime
      */
     private $dateCreated;
 
     /**
+     * @ORM\Column(type="integer")
      * @ORM\ManyToOne(targetEntity="Service")
      * @ORM\JoinColumn(name="serviceId", referencedColumnName="id")
+     *
+     * @var Service
      */
-    private $serviceId;
+    private $serviceId ;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CachedElementMetadata", mappedBy="CachedElement")
+     *
+     * @var array[CachedElementMetadata]
+     */
+    private $metadatas;
 
     public function getId(): ?int
     {
@@ -95,4 +117,15 @@ class CachedElement
         return $this;
     }
 
+    public function getService(): Service
+    {
+        return $this->serviceId;
+    }
+
+    public function setService(Service $service): self
+    {
+        $this->serviceId = $service->getId();
+
+        return $this;
+    }
 }
