@@ -42,7 +42,10 @@ class DockerService
      */
     public function getContainers()
     {
-        $cmdResult = explode(" ", $this->execute("docker ps -aq --filter 'name=steamcache-game'"));
+        $cmdResult = explode(
+            " ",
+            $this->execute("docker ps -aq --filter 'name=cache-'")
+        );
 
         return array_map(
             'trim',
@@ -123,10 +126,38 @@ class DockerService
         $dockerCompose = [
             'version' => '3.3',
             'services' => [
-                'steamcache-dns' => [
+                'cache-proxy-service' => [
+                    'image' => 'nginx',
+                    // 'image' => 'jwilder/nginx-proxy',
+                    'container_name' => 'cache-proxy-service',
+                    // 'environment' => [],
+                    'ports' => [
+                        '80:80'
+                    ],
+                    'volumes' => [
+                        './overlays/cache-proxy-service/etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf',
+                        // '/var/run/docker.sock:/tmp/docker.sock:ro'
+                    ],
+                ],
+                'cache-dns-01' => [
                     'image' => 'steamcache/steamcache-dns:latest',
-                    'container_name' => 'game-cache-steamcache-dns',
-                ]
+                    'container_name' => 'cache-dns-01',
+                    'environment' => [
+                        // 'USE_GENERIC_CACHE=true',
+                        // 'LANCACHE_IP=192.168.42.224',
+                        // 'LANCACHE_IP=cache-proxy-service',
+                        // 'STEAMCACHE_IP=172.19.0.2',
+                        'STEAMCACHE_IP=192.168.1.34',
+                        // 'STEAMCACHE_IP=cache-proxy-service',
+                    ],
+                    'depends_on' => [
+                        'cache-proxy-service',
+                    ],
+                    'ports' => [
+                        '53:53/udp'
+                    ],
+                    // 'expose' => ['53']
+                ],
             ]
         ];
 
@@ -137,7 +168,6 @@ class DockerService
                 [],
                 ['name' => 'ASC']
             );
-
         foreach ($elements as $key => $cachedElement) {
             $vmId = md5($cachedElement->getName());
 
@@ -150,15 +180,26 @@ class DockerService
                     'PGID=1000',
                     'TZ=' . date_default_timezone_get(),
                 ],
-                'volumes' => ['vol_' . $vmId],
-                'depends_on' => ['steamcache-dns'],
+                'volumes' => [
+                    'vol_' . $vmId . ':/data',
+                ],
+                'depends_on' => [
+                    'cache-proxy-service'
+                ],
                 'restart' => 'unless-stopped',
-            ];;
+                // 'ports' => [
+                //     $cachedElement->getDockerPort()  . ':80'
+                // ],
+                'expose' => [
+                    '80'
+                    // $cachedElement->getDockerPort()
+                ]
+            ];
         }
 
         file_put_contents(
             $this->dockerComposeFile,
-            Yaml::dump($dockerCompose)
+            Yaml::dump($dockerCompose, 4)
         );
 
         return array_keys($dockerCompose['services']);

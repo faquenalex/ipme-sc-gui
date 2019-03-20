@@ -43,7 +43,9 @@ class DockerController extends AbstractController
      */
     public function regenerateDockerComposeFile(DockerService $docker)
     {
+        $docker->removeContainers();
         $elements = $docker->generateDockerCompose();
+        $docker->dockerComposeUp();
 
         return $this->render('docker/regenerate-docker-compose.html.twig', [
             'docker_services_list' => $elements,

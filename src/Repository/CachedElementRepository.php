@@ -18,6 +18,20 @@ class CachedElementRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, CachedElement::class);
     }
+    /**
+     *
+     * @method CachedElement|null
+     * @return CachedElement|null
+     */
+    public function findMaxPort()
+    {
+        return $this->createQueryBuilder('c')
+            ->select('MAX(c.dockerPort)')
+            ->orderBy('c.dockerPort', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
     // /**
     //  * @return CachedElement[] Returns an array of CachedElement objects

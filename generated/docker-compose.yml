@@ -1,8 +1,34 @@
 version: '3.3'
 services:
-    steamcache-dns: { image: 'steamcache/steamcache-dns:latest', container_name: game-cache-steamcache-dns }
-    ser_b574f08e6762de6cd29c7508e28a29e6: { image: 'steamcache/monolithic:latest', container_name: steamcache-game-49610, environment: [PUID=1000, PGID=1000, TZ=Europe/Berlin], volumes: [vol_b574f08e6762de6cd29c7508e28a29e6], depends_on: [steamcache-dns], restart: unless-stopped }
-    ser_b0287db6f78df4f537571b62f49745e1: { image: 'steamcache/monolithic:latest', container_name: steamcache-game-49620, environment: [PUID=1000, PGID=1000, TZ=Europe/Berlin], volumes: [vol_b0287db6f78df4f537571b62f49745e1], depends_on: [steamcache-dns], restart: unless-stopped }
+    cache-proxy-service:
+        image: nginx
+        container_name: cache-proxy-service
+        ports:
+            - '80:80'
+        volumes:
+            - './overlays/cache-proxy-service/etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf'
+    cache-dns-01:
+        image: 'steamcache/steamcache-dns:latest'
+        container_name: cache-dns-01
+        environment:
+            - STEAMCACHE_IP=192.168.1.34
+        depends_on:
+            - cache-proxy-service
+        ports:
+            - '53:53/udp'
+    ser_9b78c0c36b729473df5d3099dfefd6cf:
+        image: 'steamcache/monolithic:latest'
+        container_name: cache-steam-380600
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/Berlin
+        volumes:
+            - 'vol_9b78c0c36b729473df5d3099dfefd6cf:/data'
+        depends_on:
+            - cache-proxy-service
+        restart: unless-stopped
+        expose:
+            - '80'
 volumes:
-    vol_b574f08e6762de6cd29c7508e28a29e6: {  }
-    vol_b0287db6f78df4f537571b62f49745e1: {  }
+    vol_9b78c0c36b729473df5d3099dfefd6cf: {  }

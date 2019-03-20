@@ -10,6 +10,13 @@ use App\Service\DockerService;
 
 class SteamService
 {
+
+    /**
+     * For naming containers
+     * @var string
+     */
+    const NAME_PATTERN = "cache-steam";
+
     /**
      * @var EntityManagerInterface
      */
@@ -39,10 +46,15 @@ class SteamService
         $game = new CachedElement();
 
         $game->setName($steamId);
-        $game->setDockerName("steamcache-game-" . $steamId);
+        $game->setDockerName(self::NAME_PATTERN . '-' . $steamId);
         $game->setDateCreated(new \Datetime);
         $game->setService(
             $this->entityManager->getRepository(Service::class)->findOneByName("Steam")
+        );
+
+        $maxPort = $this->entityManager->getRepository(CachedElement::class)->findMaxPort();
+        $game->setDockerPort(
+            is_null($maxPort) ? 8080 : ((int) ($maxPort)) + 1
         );
 
         $this->entityManager->persist($game);

@@ -21,9 +21,9 @@ class SteamController extends AbstractController
     {
         // var_dump($docker->getContainers());
         // var_dump($docker->stopContainers());
-        var_dump($docker->removeContainers());
+        // var_dump($docker->removeContainers());
         // var_dump($docker->dockerComposeUp());
-        die;
+        // die;
 
         return $this->render('steam/index.html.twig', [
             'controller_name' => 'SteamController',

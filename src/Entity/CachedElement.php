@@ -49,6 +49,13 @@ class CachedElement
     private $dateCreated;
 
     /**
+     * @ORM\Column(type="integer", nullable=false, unique=true)
+     *
+     * @var int
+     */
+    private $dockerPort;
+
+    /**
      * @ORM\Column(type="integer")
      * @ORM\ManyToOne(targetEntity="Service")
      * @ORM\JoinColumn(name="serviceId", referencedColumnName="id")
@@ -125,6 +132,26 @@ class CachedElement
     public function setService(Service $service): self
     {
         $this->serviceId = $service->getId();
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDockerPort(): int
+    {
+        return $this->dockerPort;
+    }
+
+    /**
+     * @param int $dockerPort
+     *
+     * @return self
+     */
+    public function setDockerPort(?int $dockerPort)
+    {
+        $this->dockerPort = (int) $dockerPort;
 
         return $this;
     }
