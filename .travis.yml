@@ -2,10 +2,15 @@ language: php
   php:
     - 7.2
 
-install:
+services:
   - docker
   - docker-compose
+  - mariadb
 
-before_script:
-  php bin/console doctrine:database:create
-  php bin/console doctrine:generate:entities
+install:
+  - composer install
+  - php bin/console doctrine:database:create --env=test
+  - php bin/console doctrine:generate:entities --env=test
+
+script:
+  - php bin/phpunit
