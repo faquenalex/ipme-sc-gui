@@ -38,6 +38,7 @@ class DockerService
     }
 
     /**
+     * Get all containers name's
      * @return array[string]
      */
     public function getContainers()
@@ -53,16 +54,28 @@ class DockerService
         );
     }
 
+    /**
+     * Start ONE containers
+     * @return string
+     */
     public function startContainer($name): string
     {
         return $this->execute(sprintf("docker start %s", $name));
     }
 
+    /**
+     * Stop ONE containers
+     * @return string
+     */
     public function stopContainer($name): string
     {
         return $this->execute(sprintf("docker stop %s", $name));
     }
 
+    /**
+     * Start ALL containers
+     * @return
+     */
     public function startContainers()
     {
         foreach ($this->getContainers() as $key => $containerName) {
@@ -70,6 +83,10 @@ class DockerService
         }
     }
 
+    /**
+     * Stop ALL containers
+     * @return
+     */
     public function stopContainers()
     {
         foreach ($this->getContainers() as $key => $containerName) {
@@ -77,12 +94,20 @@ class DockerService
         }
     }
 
+    /**
+     * Restart ALL containers
+     * @return
+     */
     public function restartContainers()
     {
         $this->stopContainers();
         $this->startContainers();
     }
 
+    /**
+     * Delete cache from ONE containers
+     * @return
+     */
     public function flushContainerCache(string $dockerName)
     {
         $this->execute(
@@ -90,6 +115,10 @@ class DockerService
         );
     }
 
+    /**
+     * Delete cache from ALL containers
+     * @return
+     */
     public function flushContainersCaches()
     {
         $containers = $this->getContainers();
@@ -99,12 +128,21 @@ class DockerService
         }
     }
 
+    /**
+     * return ONE container by name
+     * @param  string $dockerName Container to remove
+     * @return
+     */
     public function removeContainer(string $dockerName)
     {
         $this->stopContainer($dockerName);
         $this->execute(sprintf("docker rm %s", $dockerName));
     }
 
+    /**
+     * Remove ALL containers
+     * @return
+     */
     public function removeContainers()
     {
         $containers = $this->getContainers();
@@ -205,11 +243,20 @@ class DockerService
         return array_keys($dockerCompose['services']);
     }
 
+    /**
+     * Start docker images with docker-compose
+     * @return string
+     */
     public function dockerComposeUp(): string
     {
         return $this->execute(sprintf("docker-compose -f %s up -d", $this->dockerComposeFile));
     }
 
+    /**
+     * Execute shell command
+     * @param  string $command Command to execute
+     * @return string
+     */
     public function execute(string $command): string
     {
         return shell_exec(sprintf('RET=`%s`;echo $RET', $command));
