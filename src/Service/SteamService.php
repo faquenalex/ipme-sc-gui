@@ -78,13 +78,15 @@ class SteamService
         $cachedElement = $this->entityManager
             ->getRepository(CachedElement::class)->findOneByName($steamId);
 
-        $this->entityManager->remove($cachedElement);
-        $this->entityManager->flush();
+        if ($cachedElement) {
+            $this->entityManager->remove($cachedElement);
+            $this->entityManager->flush();
 
-        $this->docker->generateDockerCompose();
-        $this->docker->restartContainers();
-        $this->docker->dockerComposeUp();
+            $this->docker->generateDockerCompose();
+            $this->docker->restartContainers();
+            $this->docker->dockerComposeUp();
 
+        }
         // shell_exec(steamCMD)
 
         return true;
