@@ -10,9 +10,9 @@ services:
 
 install:
   - composer install
-  - php bin/console doctrine:database:create --env=prod
-  - php bin/console doctrine:schema:create --env=prod
-  - php bin/console doctrine:fixtures:load -n --env=prod
+  - php bin/console doctrine:database:create --env=travis
+  - php bin/console doctrine:schema:create --env=travis
+  - php bin/console doctrine:fixtures:load -n --env=travis
 
 script:
   - php bin/phpunit
