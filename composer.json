@@ -16,7 +16,9 @@
         "symfony/orm-pack": "^1.0",
         "symfony/test-pack": "^1.0",
         "symfony/yaml": "4.2.*",
-        "twitter/bootstrap": "^4.3"
+        "twitter/bootstrap": "^4.3",
+        "doctrine/doctrine-fixtures-bundle": "^3.1",
+        "symfony/phpunit-bridge": "4.2.*"
     },
     "config": {
         "preferred-install": {
@@ -64,7 +66,5 @@
         }
     },
     "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "^3.1",
-        "symfony/phpunit-bridge": "4.2.*"
     }
 }
