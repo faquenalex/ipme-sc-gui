@@ -17,23 +17,26 @@ class DockerController extends AbstractController
     /**
      * @Route("/docker", name="docker_index")
      */
-    public function index()
+    public function index(DockerService $dockerService)
     {
-        $data = shell_exec('RET=`docker ps -a`;echo $RET');
-        return new JsonResponse([
-                $data
-            ]
+        return new JsonResponse(
+            $dockerService->getContainers()
         );
     }
-
     /**
-     * @Route("/docker/generate", name="docker_generate")
+     * @Route("/docker/health", name="docker_status")
+     * @param  DockerService $dockerService
+     * @return JsonResponse
      */
-    public function generate(Request $request)
+    public function health(DockerService $dockerService)
     {
-        return new JsonResponse([
-                shell_exec('RET=`docker ps -aql`;echo $RET'),
-                $request->query->all()
+        $containers = $dockerService->getContainers();
+
+        return new JsonResponse(
+            [
+                'docker_status' => $dockerService->execute("docker info"),
+                'containers_names' => $containers,
+                'container_count' => count($containers),
             ]
         );
     }

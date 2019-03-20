@@ -1,0 +1,11 @@
+language: php
+  php:
+    - 7.2
+
+install:
+  - docker
+  - docker-compose
+
+before_script:
+  php bin/console doctrine:database:create
+  php bin/console doctrine:generate:entities

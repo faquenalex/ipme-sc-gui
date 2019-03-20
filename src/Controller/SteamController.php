@@ -42,4 +42,17 @@ class SteamController extends AbstractController
             $status
         ]);
     }
+
+    /**
+     * @todo CRUD ME SENPAI ?
+     * @Route("/steam/remove-by-id", name="steam_remove")
+     */
+    public function removeById(Request $request, SteamService $steamService)
+    {
+        $status = $steamService->removeGameById($request->get("id"));
+
+        return new JsonResponse([
+            $status
+        ]);
+    }
 }

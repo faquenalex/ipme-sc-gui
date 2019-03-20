@@ -32,4 +32,5 @@ services:
         expose:
             - '80'
 volumes:
+    vol_f899139df5e1059396431415e770c6dd: {  }
     vol_9b78c0c36b729473df5d3099dfefd6cf: {  }
