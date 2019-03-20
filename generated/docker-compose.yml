@@ -10,12 +10,13 @@ services:
     cache-dns-01:
         image: 'steamcache/steamcache-dns:latest'
         container_name: cache-dns-01
+        env_file: .env
         environment:
-            - STEAMCACHE_IP=192.168.1.34
+            - ${DNS_IP}
         depends_on:
             - cache-proxy-service
         ports:
-            - '53:53/udp'
+            - ${DNS_IP}:53:53/udp
     ser_9b78c0c36b729473df5d3099dfefd6cf:
         image: 'steamcache/monolithic:latest'
         container_name: cache-steam-380600
