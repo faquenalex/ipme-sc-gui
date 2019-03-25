@@ -16,19 +16,19 @@ services:
             - cache-proxy-service
         ports:
             - '53:53/udp'
-    ser_f899139df5e1059396431415e770c6dd:
+    ser_b574f08e6762de6cd29c7508e28a29e6:
         image: 'steamcache/monolithic:latest'
-        container_name: cache-steam-100
+        container_name: cache-steam-49610
         environment:
             - PUID=1000
             - PGID=1000
             - TZ=Europe/Berlin
         volumes:
-            - 'vol_f899139df5e1059396431415e770c6dd:/data'
+            - 'vol_b574f08e6762de6cd29c7508e28a29e6:/data'
         depends_on:
             - cache-proxy-service
         restart: unless-stopped
         expose:
             - '80'
 volumes:
-    vol_f899139df5e1059396431415e770c6dd: {  }
+    vol_b574f08e6762de6cd29c7508e28a29e6: {  }

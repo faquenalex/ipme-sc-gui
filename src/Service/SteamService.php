@@ -9,8 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Service\DockerService;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Monolog\Handler\FirePHPHandler;
-
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class SteamService
 {
@@ -31,14 +30,25 @@ class SteamService
      */
     private $docker;
 
+    /**
+     * @var KernelInterface
+     */
+    private $appKernel;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
     public function __construct(EntityManagerInterface $EntityManager, DockerService $docker, KernelInterface $appKernel)
     {
         $this->entityManager = $EntityManager;
         $this->docker = $docker;
         $this->appKernel = $appKernel;
-        $stream = new StreamHandler(__DIR__.'/my_app.log', Logger::DEBUG);
-        $firephp = new FirePHPHandler();
-        $this->StreamHandler = $this->appKernel->getProjectDir()
+
+        $this->logger = new Logger('steam');
+        $stream = new StreamHandler($this->appKernel->getProjectDir() . "/generated/logs/app.log", Logger::DEBUG);
+        $this->logger->pushHandler($stream);
     }
 
     /**
@@ -67,6 +77,8 @@ class SteamService
 
         $this->entityManager->persist($game);
         $this->entityManager->flush();
+
+        $this->logger->notice("Game added. ID:" . $steamId);
 
         $this->docker->generateDockerCompose();
         $this->docker->restartContainers();
