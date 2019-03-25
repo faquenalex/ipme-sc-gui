@@ -38,7 +38,7 @@ class SteamService
         $this->appKernel = $appKernel;
         $stream = new StreamHandler(__DIR__.'/my_app.log', Logger::DEBUG);
         $firephp = new FirePHPHandler();
-        $this->StreamHandler = $this->appKernel->getProjectDir()
+        $this->StreamHandler = $this->appKernel->getProjectDir();
     }
 
     /**
