@@ -8,7 +8,8 @@ use App\Entity\CachedElementMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\DockerService;
 use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+// use Monolog\Handler\StreamHandler;
+use Monolog\Handler\ErrorLogHandler;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class SteamService
@@ -46,11 +47,8 @@ class SteamService
         $this->docker = $docker;
         $this->appKernel = $appKernel;
 
-        $this->logger = new Logger('steam');
-        $this->logger->pushHandler(
-            new StreamHandler($this->appKernel->getProjectDir() . "/generated/logs/app.log", Logger::DEBUG)
-        );
-
+        $this->infoLogger = new Logger('steam');
+        $this->infoLogger->pushHandler(new ErrorLogHandler());
     }
 
     /**
@@ -80,7 +78,7 @@ class SteamService
         $this->entityManager->persist($game);
         $this->entityManager->flush();
 
-        $this->logger->notice("Game added. ID:" . $steamId);
+        $this->infoLogger->info("Game added. ID:" . $steamId, [Logger::INFO]);
 
         $this->docker->generateDockerCompose();
         $this->docker->restartContainers();
