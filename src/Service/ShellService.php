@@ -41,7 +41,8 @@ class ShellService
         $cmdTest = explode(" ", $command);
 
         if (! $this->commandExist($cmdTest[0])) {
-            $this->logger->error(sprintf("Command %s missing", $cmdTest[0]));
+            // $this->logger->error(sprintf("Command %s missing", $cmdTest[0]));
+            $this->logger->emergency(sprintf("Command %s missing", $cmdTest[0]));
             $this->logger->debug(sprintf("Command was `%s`", $command));
 
             return "";
