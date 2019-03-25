@@ -48,7 +48,7 @@ class SteamService
 
         $this->logger = new Logger('steam');
         $this->logger->pushHandler(
-            new StreamHandler($this->appKernel->getProjectDir() . "/generated/logs/app.log", Logger::DEBUG);
+            new StreamHandler($this->appKernel->getProjectDir() . "/generated/logs/app.log", Logger::DEBUG)
         );
 
     }
