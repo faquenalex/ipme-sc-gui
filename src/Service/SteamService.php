@@ -7,6 +7,10 @@ use App\Entity\CachedElement;
 use App\Entity\CachedElementMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\DockerService;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\FirePHPHandler;
+
 
 class SteamService
 {
@@ -27,10 +31,14 @@ class SteamService
      */
     private $docker;
 
-    public function __construct(EntityManagerInterface $EntityManager, DockerService $docker)
+    public function __construct(EntityManagerInterface $EntityManager, DockerService $docker, KernelInterface $appKernel)
     {
         $this->entityManager = $EntityManager;
         $this->docker = $docker;
+        $this->appKernel = $appKernel;
+        $stream = new StreamHandler(__DIR__.'/my_app.log', Logger::DEBUG);
+        $firephp = new FirePHPHandler();
+        $this->StreamHandler = $this->appKernel->getProjectDir()
     }
 
     /**
