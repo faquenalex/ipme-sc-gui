@@ -26,7 +26,7 @@ class SteamTest extends WebTestCase
     public function testResponses(string $url)
     {
         $this->client->request('GET', $url);
-        echo htmlentities((string)$results);
+        
         return $this->assertJson(
             $this->client->getResponse()->getContent()
         );
