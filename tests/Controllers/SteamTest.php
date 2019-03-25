@@ -35,7 +35,7 @@ class SteamTest extends WebTestCase
     public function urlProvider()
     {
         yield ['steam/add-by-id?id=100'];
-        yield ['steam/remove-by-id?id=100'];
+        ## yield ['steam/remove-by-id?id=100'];
     }
 
 
