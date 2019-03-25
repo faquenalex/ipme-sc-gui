@@ -46,6 +46,11 @@ class SteamService
         $this->docker = $docker;
         $this->appKernel = $appKernel;
 
+        $this->logger = new Logger('steam');
+        $this->logger->pushHandler(
+            new StreamHandler($this->appKernel->getProjectDir() . "/generated/logs/app.log", Logger::DEBUG);
+        );
+
     }
 
     /**
