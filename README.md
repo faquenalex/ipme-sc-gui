@@ -19,10 +19,51 @@ It means that when you will download your game for the time with your internet, 
 
 ## Technologies
 
+* [Docker](https://hub.docker.com/r/steamcache/monolithic) - The containers software we used.
+* [Symfony](https://symfony.com/) - PHP Framework.
+* [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD) - Command-line version of the Steam client.
+
+
 ## Installation
+
+### Docker
+
+Update the *apt* package index.
+
+```bash
+$ sudo apt-get update
+```
+Install the latest version of *Docker CE* and *containerd*.
+
+```bash
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io
+```
+
+Clone the repository :
+
+```bash
+$ sudo git clone https://github.com/faquenalex/ipme-sc-gui.git
+```
+
+Then you have to build the dockerfile download to install all the dependencies needed :
+
+```bash
+$ sudo docker build name_file
+```
 
 ## How to
 
+Set the default settings to be used when downloading your games.
+
+```bash
+$ nano .env
+```
+ You can check the file .env.test to help you set it up.
+
 ## Thanks
+
+- Based on configs from [Steam Cache](https://github.com/steamcache/).
+- Everyone that helped us on the project.
+
 
 ## Author
