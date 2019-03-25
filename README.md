@@ -20,8 +20,8 @@ It means that when you will download your game for the time with your internet, 
 ## Technologies
 
 * [Docker](https://hub.docker.com/r/steamcache/monolithic) - The containers software we used.
-* [Symfony]() - PHP Framework.
-* [SteamCMD]() - Command-line version of the Steam client.
+* [Symfony](https://symfony.com/) - PHP Framework.
+* [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD) - Command-line version of the Steam client.
 
 
 ## Installation
