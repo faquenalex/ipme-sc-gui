@@ -6,6 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityManager;
 use App\Entity\CachedElement;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Monolog\Logger;
+use Monolog\Handler\ErrorLogHandler;
 
 class DockerService
 {
@@ -27,6 +29,16 @@ class DockerService
     private $dockerComposeFile;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @var Shell
+     */
+    private $shell;
+
+    /**
      * @param EntityManager $entityManager
      * @param KernelInterface $appKernel
      */
@@ -35,6 +47,11 @@ class DockerService
         $this->entityManager = $entityManager;
         $this->appKernel = $appKernel;
         $this->dockerComposeFile = $this->appKernel->getProjectDir() . self::GENERATION_DIR . "docker-compose.yml";
+
+        $this->shell = new ShellService();
+
+        $this->logger = new Logger('steam');
+        $this->logger->pushHandler(new ErrorLogHandler());
     }
 
     /**
@@ -45,7 +62,7 @@ class DockerService
     {
         $cmdResult = explode(
             " ",
-            $this->execute("docker ps -aq --filter 'name=cache-'")
+            $this->shell->execute("docker ps -aq --filter 'name=cache-'")
         );
 
         return array_map(
@@ -60,7 +77,12 @@ class DockerService
      */
     public function startContainer($name): string
     {
-        return $this->execute(sprintf("docker start %s", $name));
+        if (empty($name)) {
+            $this->logger->error("No container name provided");
+            return "";
+        }
+
+        return $this->shell->execute(sprintf("docker start %s", $name));
     }
 
     /**
@@ -69,7 +91,12 @@ class DockerService
      */
     public function stopContainer($name): string
     {
-        return $this->execute(sprintf("docker stop %s", $name));
+        if (empty($name)) {
+            $this->logger->error("No container name provided");
+            return "";
+        }
+
+        return $this->shell->execute(sprintf("docker stop %s", $name));
     }
 
     /**
@@ -110,7 +137,7 @@ class DockerService
      */
     public function flushContainerCache(string $dockerName)
     {
-        $this->execute(
+        $this->shell->execute(
             sprintf("docker exec -it %s rm -Rf /cache/data/", $dockerName)
         );
     }
@@ -134,7 +161,7 @@ class DockerService
     public function removeContainer(string $dockerName)
     {
         $this->stopContainer($dockerName);
-        $this->execute(sprintf("docker rm %s", $dockerName));
+        $this->shell->execute(sprintf("docker rm %s", $dockerName));
     }
 
     /**
@@ -241,20 +268,11 @@ class DockerService
 
     /**
      * Start docker images with docker-compose
-     * @return string
+     * @return
      */
-    public function dockerComposeUp(): string
+    public function dockerComposeUp()
     {
-        return $this->execute(sprintf("docker-compose -f %s up -d", $this->dockerComposeFile));
-    }
-
-    /**
-     * Execute shell command
-     * @param  string $command Command to execute
-     * @return string
-     */
-    public function execute(string $command): string
-    {
-        return shell_exec(sprintf('RET=`%s`;echo $RET', $command));
+        $this->logger->info("Generate docker-compose");
+        $this->shell->execute(sprintf("docker-compose -f %s up -d", $this->dockerComposeFile));
     }
 }
