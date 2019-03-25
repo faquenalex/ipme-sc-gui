@@ -121,9 +121,7 @@ class DockerService
      */
     public function flushContainersCaches()
     {
-        $containers = $this->getContainers();
-
-        foreach ($containers as $key => $containerName) {
+        foreach ($this->getContainers() as $key => $containerName) {
             $this->flushContainerCache($containerName);
         }
     }
@@ -145,9 +143,7 @@ class DockerService
      */
     public function removeContainers()
     {
-        $containers = $this->getContainers();
-
-        foreach ($containers as $key => $containerName) {
+        foreach ($this->getContainers() as $key => $containerName) {
             $this->removeContainer($containerName);
         }
 
