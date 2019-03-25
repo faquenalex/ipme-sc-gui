@@ -19,7 +19,11 @@ class ShellService
         return;
     }
 
-    public static function commandExist(string $cmd)
+    /**
+     * @param  string $cmd Command name
+     * @return bool|boolean
+     */
+    public static function commandExist(string $cmd) : bool
     {
         return ! empty(shell_exec(sprintf("which %s", $cmd)));
     }
@@ -38,7 +42,7 @@ class ShellService
             $this->logger->error(sprintf("Command %s missing", $cmdTest[0]));
             $this->logger->debug(sprintf("Command was `%s`", $command));
 
-            return;
+            return "";
         }
 
         return shell_exec(sprintf('RET=`%s`;echo $RET', $command));
