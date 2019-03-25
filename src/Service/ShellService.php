@@ -37,6 +37,8 @@ class ShellService
         if (! $this->commandExist($cmdTest[0])) {
             $this->logger->error(sprintf("Command %s missing", $cmdTest[0]));
             $this->logger->debug(sprintf("Command was `%s`", $command));
+
+            return;
         }
 
         return shell_exec(sprintf('RET=`%s`;echo $RET', $command));
