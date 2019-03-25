@@ -3,6 +3,7 @@
 namespace App\Service;
 use Monolog\Logger;
 use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\StreamHandler;
 
 class ShellService
 {
@@ -15,6 +16,7 @@ class ShellService
     {
         $this->logger = new Logger('steam');
         $this->logger->pushHandler(new ErrorLogHandler());
+        $this->logger->pushHandler(new StreamHandler('php://stderr'));
 
         return;
     }
