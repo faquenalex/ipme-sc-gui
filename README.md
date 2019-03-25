@@ -19,10 +19,19 @@ It means that when you will download your game for the time with your internet, 
 
 ## Technologies
 
+* [Docker](https://hub.docker.com/r/steamcache/monolithic) - The containers software we used.
+* [Symfony]() - PHP Framework.
+* [SteamCMD]() - Command-line version of the Steam client.
+
+
 ## Installation
 
 ## How to
 
 ## Thanks
+
+- Based on configs from [Steam Cache](https://github.com/steamcache/)
+- Everyone that helped us on the project.
+
 
 ## Author
