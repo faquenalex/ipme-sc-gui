@@ -53,6 +53,13 @@ $ sudo docker build name_file
 
 ## How to
 
+Set the default settings to be used when downloading your games.
+
+```bash
+$ nano .env
+```
+ You can check the file .env.test to help you set it up.
+
 ## Thanks
 
 - Based on configs from [Steam Cache](https://github.com/steamcache/).
