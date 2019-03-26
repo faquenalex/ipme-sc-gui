@@ -7,8 +7,8 @@
 * [Installation](#installation)
 * [How to](#how-to)
 * [Tests](#tests)
-    - [Heroku](#heroku)
     - [Travis](#travis)
+    - [Heroku](#heroku)
 * [Thanks](#thanks)
 * [Author](#author)
 
@@ -75,7 +75,7 @@ Heroku is a platform as a service (PaaS) that enables developers to build, run, 
 
 Here a quick tutorial to be able to use Heroku :
 
- 1 - Sign up on https://www.heroku.com/ .
+ 1 - Sign up on https://www.heroku.com/ \
  2 - 
 
 #### Procfile
