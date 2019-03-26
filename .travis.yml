@@ -20,4 +20,4 @@ install:
 script:
   - php bin/phpunit -c phpunit.travis.xml.dist
   - docker ps -a
-  - docker-compose ps
+  - docker-compose -f generated/docker-compose.yml ps
