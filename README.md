@@ -28,7 +28,7 @@ It means that when you will download your game for the time with your internet, 
 * [Docker](https://hub.docker.com/r/steamcache/monolithic) - The containers software we used.
 * [Symfony](https://symfony.com/) - PHP Framework.
 * [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD) - Command-line version of the Steam client.
-* [Heroku](https://devcenter.heroku.com/categories/reference) - Platform as a Service (Paas).
+* [Heroku](https://devcenter.heroku.com/categories/reference) - Platform as a Service (PaaS).
 * [Travis](https://docs.travis-ci.com/) - CI service.
 
 
@@ -130,11 +130,11 @@ Heroku is a platform as a service (PaaS) that enables developers to build, run, 
 Here a quick tutorial to be able to use Heroku :
 
  1- Sign up on https://www.heroku.com/ \
- 2- Create a new app.
- 3- Go to Deploy and add a deployment method like GitHub, that's what we did.
- 4- Connect to GitHub to enable code diffs and deploys.
- 5- After that, go to Deploy and set it up if you want your deployment to be automatic or not by branch.
- 6- Finally, go to settings and add buildpacks that correspond with the language you use.
+ 2- Create a new app. \
+ 3- Go to Deploy and add a deployment method like GitHub, that's what we did. \
+ 4- Connect to GitHub to enable code diffs and deploys. \
+ 5- After that, go to Deploy and set it up if you want your deployment to be automatic or not by branch. \
+ 6- Finally, go to settings and add buildpacks that correspond with the language you use. \
 
 A brief description of the differents tabs :
 
