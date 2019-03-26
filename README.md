@@ -92,7 +92,7 @@ Let's get started with Travis CI :
 
 Here an example for our application :
 
-```bash
+```yml
 language: php
 
 php:
@@ -134,7 +134,7 @@ Here a quick tutorial to be able to use Heroku :
  3- Go to Deploy and add a deployment method like GitHub, that's what we did. \
  4- Connect to GitHub to enable code diffs and deploys. \
  5- After that, go to Deploy and set it up if you want your deployment to be automatic or not by branch. \
- 6- Finally, go to settings and add buildpacks that correspond with the language you use. \
+ 6- Finally, go to settings and add buildpacks that correspond with the language you use.
 
 A brief description of the differents tabs :
 
@@ -146,10 +146,35 @@ A brief description of the differents tabs :
 - Access : If you want collaborator to have access of your app.
 - Settings : Setting of your app.
 
+Now that you have done all of this. You have go configure a procfile 
 
 #### Procfile
 
+Heroku apps include a Procfile that specifies the commands that are executed by the app on startup.
+You can use Procfile to declare a variety of process types like your app's web server. So you can test your application on the web.
+Procfile is always a simple text file that is named *procfile* without an extension. It must be in your app's root directory.
+
+To see more about how to configure your procfile, follow the [official](https://devcenter.heroku.com/articles/procfile) doc.
+
+Here an example from our app :
+
+```
+web: $(composer config bin-dir)/heroku-php-apache2 public
+```
+
+We declare a web server process for our app that will point on the repertory public and its files.
+When it's done, we are able to see our app when we click on *Open App* at the right top of our dashboard.
+
+In the *settings* tab, we can add environment variables.
+
 #### Config Vars
+
+A single app always runs a lot of environments.
+Using the Heroku Dashboard, you can edit config vars from your app's Settings tab :
+![alt text](https://image.prntscr.com/image/CN9Fa7taRMiVwx9G4DrZRQ.png)
+
+It is easier and let you see all the environments you are using.
+
 
 ## Thanks
 
