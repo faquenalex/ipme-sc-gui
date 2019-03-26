@@ -129,8 +129,23 @@ Heroku is a platform as a service (PaaS) that enables developers to build, run, 
 
 Here a quick tutorial to be able to use Heroku :
 
- 1 - Sign up on https://www.heroku.com/ \
- 2 - 
+ 1- Sign up on https://www.heroku.com/ \
+ 2- Create a new app.
+ 3- Go to Deploy and add a deployment method like GitHub, that's what we did.
+ 4- Connect to GitHub to enable code diffs and deploys.
+ 5- After that, go to Deploy and set it up if you want your deployment to be automatic or not by branch.
+ 6- Finally, go to settings and add buildpacks that correspond with the language you use.
+
+A brief description of the differents tabs :
+
+- Overview : Information global of your app.
+- Resources : Show the Dynos' (container) type your app is using and the add-ons it uses.
+- Deploy : Setting on how your app is deployed.
+- Metrics : Data about your app.
+- Activity : Show all the app's deployments and builds with logs.
+- Access : If you want collaborator to have access of your app.
+- Settings : Setting of your app.
+
 
 #### Procfile
 
