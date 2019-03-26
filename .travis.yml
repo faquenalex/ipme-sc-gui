@@ -15,6 +15,5 @@ install:
   - php bin/console doctrine:fixtures:load -n --env=travis
 
 script:
-  - docker-compose
   - php bin/phpunit -c phpunit.travis.xml.dist
   - docker ps -a
