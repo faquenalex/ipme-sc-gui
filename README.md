@@ -8,7 +8,10 @@
 * [How to](#how-to)
 * [Tests](#tests)
     - [Travis](#travis)
+        - [Get Started](#get-started)
     - [Heroku](#heroku)
+        - [Procfile](#procfile)
+        - [Config Vars](#config-vars)
 * [Thanks](#thanks)
 * [Author](#author)
 
@@ -78,6 +81,7 @@ When you run a build, Travis CI clones your GitHub repository into a new virtual
 
 Travis CI is configured by adding a file .travis.yml to the root directory of the repository. This file specifies the programming  language used in the application, the desired building and testing environment, and various other parameters. You can find more on [Travis Official Doc](https://docs.travis-ci.com/user/customizing-the-build)).
 
+#### Get Started
 
 Let's get started with Travis CI :
 
@@ -129,6 +133,8 @@ Here a quick tutorial to be able to use Heroku :
  2 - 
 
 #### Procfile
+
+#### Config Vars
 
 ## Thanks
 
