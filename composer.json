@@ -17,6 +17,7 @@
         "symfony/monolog-bundle": "^3.3",
         "symfony/orm-pack": "^1.0",
         "symfony/phpunit-bridge": "4.2.*",
+        "symfony/process": "4.2.*",
         "symfony/test-pack": "^1.0",
         "symfony/yaml": "4.2.*",
         "twitter/bootstrap": "^4.3"

@@ -8,7 +8,7 @@ use App\Entity\CachedElementMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\DockerService;
 use Monolog\Logger;
-use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\StreamHandler;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class SteamService
@@ -46,8 +46,8 @@ class SteamService
         $this->docker = $docker;
         $this->appKernel = $appKernel;
 
-        $this->logger = new Logger('steam');
-        $this->logger->pushHandler(new ErrorLogHandler());
+        $this->logger = new Logger(self::class);
+        $this->logger->pushHandler(new StreamHandler('php://stderr'));
     }
 
     /**

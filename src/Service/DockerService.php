@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManager;
 use App\Entity\CachedElement;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Monolog\Logger;
-use Monolog\Handler\ErrorLogHandler;
+use Monolog\Handler\StreamHandler;
 
 class DockerService
 {
@@ -50,8 +50,8 @@ class DockerService
 
         $this->shell = new ShellService();
 
-        $this->logger = new Logger('steam');
-        $this->logger->pushHandler(new ErrorLogHandler());
+        $this->logger = new Logger(self::class);
+        $this->logger->pushHandler(new StreamHandler('php://stderr'));
     }
 
     /**
@@ -60,13 +60,20 @@ class DockerService
      */
     public function getContainers()
     {
-        $cmdResult = explode(
-            " ",
-            $this->shell->execute("docker ps -aq --filter 'name=cache-'")
+        $cmdResult = preg_split(
+            "/[\s]+/",
+            $this->shell->execute(
+                "docker",
+                [
+                    "ps",
+                    "-aq",
+                    "--filter",
+                    "name=cache-",
+                ]
+            )
         );
 
-        return array_map(
-            'trim',
+        return array_filter(
             $cmdResult
         );
     }
@@ -82,7 +89,7 @@ class DockerService
             return "";
         }
 
-        return $this->shell->execute(sprintf("docker start %s", $name));
+        return $this->shell->execute("docker", ['start', $name]);
     }
 
     /**
@@ -96,7 +103,7 @@ class DockerService
             return "";
         }
 
-        return $this->shell->execute(sprintf("docker stop %s", $name));
+        return $this->shell->execute("docker", ['stop', $name]);
     }
 
     /**
@@ -133,13 +140,11 @@ class DockerService
 
     /**
      * Delete cache from ONE containers
-     * @return
+     * @return string
      */
-    public function flushContainerCache(string $dockerName)
+    public function flushContainerCache(string $dockerName): string
     {
-        $this->shell->execute(
-            sprintf("docker exec -it %s rm -Rf /cache/data/", $dockerName)
-        );
+        return $this->shell->execute("docker", ['exec', '-it', $name, 'rm -Rf /cache/data/']);
     }
 
     /**
@@ -272,7 +277,16 @@ class DockerService
      */
     public function dockerComposeUp()
     {
-        $this->logger->info("Generate docker-compose");
-        $this->shell->execute(sprintf("docker-compose -f %s up -d", $this->dockerComposeFile));
+        $this->logger->info("Regenerate docker-compose");
+
+        $this->shell->execute(
+            "docker-compose",
+            [
+                '-f',
+                $this->dockerComposeFile,
+                'up',
+                '-d',
+            ]
+        );
     }
 }
