@@ -17,7 +17,6 @@ class ShellService
     public function __construct()
     {
         $this->logger = new Logger(self::class);
-        // $this->logger->pushHandler(new ErrorLogHandler());
         $this->logger->pushHandler(new StreamHandler('php://stderr'));
 
         $process = new Process('echo $PATH');
@@ -38,7 +37,7 @@ class ShellService
         array_unshift($args, $binary);
 
         $process = new Process($args);
-        $this->logger->debug("Running : " . $process->getCommandLine());
+        $this->logger->info("Running : " . $process->getCommandLine());
         $process->run();
 
         if (! $process->isSuccessful()) {
@@ -48,6 +47,5 @@ class ShellService
         $this->logger->debug("Output : " . $process->getOutput());
 
         return $process->getOutput();
-        // return shell_exec(sprintf('RET=`%s`;echo $RET', $command));
     }
 }
