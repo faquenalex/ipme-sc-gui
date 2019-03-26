@@ -14,7 +14,7 @@ class DefaultController extends AbstractController
     public function index()
     {
       return new Response(
-        'Yolo',
+        'Mario',
         Response::HTTP_OK,
         ['content-type' => 'text/html']
       );
