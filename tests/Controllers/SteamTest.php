@@ -26,7 +26,7 @@ class SteamTest extends WebTestCase
     public function testResponses(string $url)
     {
         $this->client->request('GET', $url);
-
+        echo $this->client->getResponse()->getContent();
         return $this->assertJson(
             $this->client->getResponse()->getContent()
         );
@@ -35,7 +35,7 @@ class SteamTest extends WebTestCase
     public function urlProvider()
     {
         yield ['steam/add-by-id?id=100'];
-        yield ['steam/remove-by-id?id=100'];
+        ## yield ['steam/remove-by-id?id=100'];
     }
 
 
