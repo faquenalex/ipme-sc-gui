@@ -8,9 +8,6 @@ services:
   - docker-compose
   - mariadb
 
-env:
-  - .env.travis
-
 install:
   - composer install
   - php bin/console doctrine:database:create --env=travis
