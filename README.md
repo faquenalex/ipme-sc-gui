@@ -38,24 +38,24 @@ It means that when you will download your game for the time with your internet, 
 
 Update the *apt* package index.
 
-```bash
+```shell
 $ sudo apt-get update
 ```
 Install the latest version of *Docker CE* and *containerd*.
 
-```bash
+```shell
 $ sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
 Clone the repository :
 
-```bash
+```shell
 $ sudo git clone https://github.com/faquenalex/ipme-sc-gui.git
 ```
 
 Then you have to build the dockerfile download to install all the dependencies needed :
 
-```bash
+```shell
 $ sudo docker build name_file
 ```
 
@@ -63,7 +63,7 @@ $ sudo docker build name_file
 
 Set the default settings to be used when downloading your games.
 
-```bash
+```shell
 $ nano .env
 ```
  You can check the file .env.test to help you set it up.
@@ -146,7 +146,7 @@ A brief description of the differents tabs :
 - Access : If you want collaborator to have access of your app.
 - Settings : Setting of your app.
 
-Now that you have done all of this. You have go configure a procfile 
+Now that you have done all of this you have go configure a procfile.
 
 #### Procfile
 
