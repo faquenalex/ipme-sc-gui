@@ -6,6 +6,9 @@
 * [Introduction](#introduction)
 * [Installation](#installation)
 * [How to](#how-to)
+* [Tests](#tests)
+    - [Heroku](#heroku)
+    - [Travis](#travis)
 * [Thanks](#thanks)
 * [Author](#author)
 
@@ -22,6 +25,8 @@ It means that when you will download your game for the time with your internet, 
 * [Docker](https://hub.docker.com/r/steamcache/monolithic) - The containers software we used.
 * [Symfony](https://symfony.com/) - PHP Framework.
 * [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD) - Command-line version of the Steam client.
+* [Heroku](https://devcenter.heroku.com/categories/reference) - Platform as a Service (Paas).
+* [Travis](https://docs.travis-ci.com/) - CI service.
 
 
 ## Installation
@@ -59,6 +64,21 @@ Set the default settings to be used when downloading your games.
 $ nano .env
 ```
  You can check the file .env.test to help you set it up.
+
+## Tests
+
+### Travis
+
+### Heroku
+
+Heroku is a platform as a service (PaaS) that enables developers to build, run, and operate applications entirely in the cloud. It allows you to test your app before sending it in prod. You can have access to logs and a lot of other services.
+
+Here a quick tutorial to be able to use Heroku :
+
+ 1 - Sign up on https://www.heroku.com/ .
+ 2 - 
+
+#### Procfile
 
 ## Thanks
 
