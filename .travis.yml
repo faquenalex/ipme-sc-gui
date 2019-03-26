@@ -9,7 +9,7 @@ services:
   - mariadb
 
 before_install:
-  - mysql -e "ALTER USER 'travis'@'localhost' IDENTIFIED BY 'travis';"
+  - mysql -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('travis');"
 
 install:
   - composer install
@@ -20,3 +20,5 @@ install:
 script:
   - php bin/phpunit -c phpunit.travis.xml.dist
   - docker ps -a
+  - cat generated/docker-compose.yml
+  - docker-compose -f generated/docker-compose.yml ps

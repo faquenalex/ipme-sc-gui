@@ -14,7 +14,7 @@ class DefaultController extends AbstractController
     public function index()
     {
       return new Response(
-        'Yolo',
+        '<iframe src="https://linuk.github.io/Mario.Run/index.html" width="1500px" height="500px"></iframe>',
         Response::HTTP_OK,
         ['content-type' => 'text/html']
       );
