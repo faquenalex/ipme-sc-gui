@@ -8,6 +8,9 @@ services:
   - docker-compose
   - mariadb
 
+before_install:
+  - mysql -e "ALTER USER 'travis'@'localhost' IDENTIFIED BY 'travis';"
+
 install:
   - composer install
   - php bin/console doctrine:database:create --env=travis
