@@ -175,6 +175,13 @@ Using the Heroku Dashboard, you can edit config vars from your app's Settings ta
 
 It is easier and let you see all the environments you are using.
 
+You will need at least four vars :
+
+- MYSQL_DATABASE - name of the DB.
+- MYSQL_USER -  username.
+- MYSQL_PASSWORD - password.
+- MYSQL_URL - url to connect to the DB.
+
 
 ## Thanks
 
