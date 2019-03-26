@@ -6,6 +6,7 @@
 * [Introduction](#introduction)
 * [Installation](#installation)
 * [How to](#how-to)
+    - [Commands](#commands)
 * [Tests](#tests)
     - [Travis](#travis)
         - [Get Started](#get-started)
@@ -67,6 +68,9 @@ Set the default settings to be used when downloading your games.
 $ nano .env
 ```
  You can check the file .env.test to help you set it up.
+
+
+ ### Commands
 
 ## Tests
 
