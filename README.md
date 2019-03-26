@@ -9,6 +9,8 @@
 * [Tests](#tests)
     - [Travis](#travis)
     - [Heroku](#heroku)
+        - [Procfile](#procfile)
+        - [Config Vars](#config-vars)
 * [Thanks](#thanks)
 * [Author](#author)
 
@@ -129,6 +131,8 @@ Here a quick tutorial to be able to use Heroku :
  2 - 
 
 #### Procfile
+
+#### Config Vars
 
 ## Thanks
 
