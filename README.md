@@ -109,10 +109,10 @@ script:
   - php bin/phpunit -c phpunit.travis.xml.dist
   - docker ps -a
 ```
-What does the previous example do ?\
-- It specifies a PHP project that should be built in PHP 7.2.\
-- It uses 3 different services : docker, docker-compose and mariadb.\
-- It installs dependencies with composer, and create a database, a schema with fixtures by using environnement variables.\
+What does the previous example do ?
+- It specifies a PHP project that should be built in PHP 7.2.
+- It uses 3 different services : docker, docker-compose and mariadb.
+- It installs dependencies with composer, and create a database, a schema with fixtures by using environnement variables.
 - Then it uses a config file to do some unit testings, and do some command.
 
 
