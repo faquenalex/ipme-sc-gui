@@ -35,7 +35,7 @@ class DockerTest extends WebTestCase
     public function urlProvider()
     {
         yield ['/docker'];
-        yield ['/docker/health'];
+        // yield ['/docker/health'];
     }
 
 

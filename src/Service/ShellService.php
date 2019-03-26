@@ -33,6 +33,7 @@ class ShellService
 
     /**
      * Execute shell command
+     *
      * @param  string $command Command to execute
      * @return string
      */
