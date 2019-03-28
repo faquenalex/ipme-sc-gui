@@ -44,11 +44,11 @@ class DockerController extends AbstractController
     /**
      * @Route("/docker/regenerate-docker-compose", name="docker_regenerate-docker-compose")
      */
-    public function regenerateDockerComposeFile(DockerService $docker)
+    public function regenerateDockerComposeFile(DockerService $dockerService)
     {
-        $docker->removeContainers();
-        $docker->generateDockerCompose();
-        $docker->dockerComposeUp();
+        $dockerService->removeContainers();
+        $dockerService->generateDockerCompose();
+        $dockerService->dockerComposeUp();
 
         return new JsonResponse(
             $dockerService->getContainers()

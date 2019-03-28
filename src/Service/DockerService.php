@@ -1,13 +1,13 @@
 <?php
 namespace App\Service;
 
-use Symfony\Component\Yaml\Yaml;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityManager;
 use App\Entity\CachedElement;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Monolog\Logger;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Yaml\Yaml;
 
 class DockerService
 {
@@ -39,7 +39,7 @@ class DockerService
     private $shell;
 
     /**
-     * @param EntityManager $entityManager
+     * @param EntityManager   $entityManager
      * @param KernelInterface $appKernel
      */
     public function __construct(EntityManagerInterface $entityManager, KernelInterface $appKernel)
@@ -86,6 +86,7 @@ class DockerService
     {
         if (empty($name)) {
             $this->logger->error("No container name provided");
+
             return "";
         }
 
@@ -100,6 +101,7 @@ class DockerService
     {
         if (empty($name)) {
             $this->logger->error("No container name provided");
+
             return "";
         }
 
@@ -142,7 +144,7 @@ class DockerService
      * Delete cache from ONE containers
      * @return string
      */
-    public function flushContainerCache(string $dockerName): string
+    public function flushContainerCache(string $name): string
     {
         return $this->shell->execute("docker", ['exec', '-it', $name, 'rm -Rf /cache/data/']);
     }
@@ -160,13 +162,14 @@ class DockerService
 
     /**
      * return ONE container by name
-     * @param  string $dockerName Container to remove
+     * @param    string $name Container to remove
      * @return
      */
-    public function removeContainer(string $dockerName)
+    public function removeContainer(string $name)
     {
-        $this->stopContainer($dockerName);
-        $this->shell->execute(sprintf("docker rm %s", $dockerName));
+        $this->stopContainer($name);
+
+        return $this->shell->execute("docker", ['rm', $name]);
     }
 
     /**
@@ -190,25 +193,47 @@ class DockerService
     public function generateDockerCompose(): array
     {
         $dockerCompose = [
-            'version' => '3.3',
+            'version'  => '3.3',
             'services' => [
+                'lancache-autofill'   => [
+                    'image'          => 'ubuntu:18.10',
+                    'container_name' => 'cache-lancache-autofill',
+                    'environment'    => [
+                        'PUID=1000',
+                        'PGID=1000',
+                        'TZ=' . date_default_timezone_get(),
+                        'DOWNLOADS_DIRECTORY=/data',
+                        'STEAMCMD_PATH=/usr/games/steam/steamcmd.sh',
+                        'DEFAULT_STEAM_USER=steamIPME',
+                        'DEBIAN_FRONTEND=noninteractive',
+                        'DEBCONF_NONINTERACTIVE_SEEN=true',
+                    ],
+                    'command'        => 'bash /scripts/bootstrap.sh',
+                    'volumes'        => [
+                        'lancache-autofill:/data',
+                        './overlays/lancache/scripts:/scripts',
+                    ],
+                    'ports' => [
+                        '8000:80'
+                    ]
+                ],
                 'cache-proxy-service' => [
-                    'image' => 'nginx',
+                    'image'          => 'nginx',
                     // 'image' => 'jwilder/nginx-proxy',
                     'container_name' => 'cache-proxy-service',
                     // 'environment' => [],
-                    'ports' => [
-                        '80:80'
+                    'ports'          => [
+                        '80:80',
                     ],
-                    'volumes' => [
+                    'volumes'        => [
                         './overlays/cache-proxy-service/etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf',
                         // '/var/run/docker.sock:/tmp/docker.sock:ro'
                     ],
                 ],
-                'cache-dns-01' => [
-                    'image' => 'steamcache/steamcache-dns:latest',
+                'cache-dns-01'        => [
+                    'image'          => 'steamcache/steamcache-dns:latest',
                     'container_name' => 'cache-dns-01',
-                    'environment' => [
+                    'environment'    => [
                         // 'USE_GENERIC_CACHE=true',
                         // 'LANCACHE_IP=192.168.42.224',
                         // 'LANCACHE_IP=cache-proxy-service',
@@ -216,15 +241,19 @@ class DockerService
                         'STEAMCACHE_IP=192.168.1.34',
                         // 'STEAMCACHE_IP=cache-proxy-service',
                     ],
-                    'depends_on' => [
+                    'depends_on'     => [
                         'cache-proxy-service',
+                        'lancache-autofill',
                     ],
-                    'ports' => [
-                        '53:53/udp'
+                    'ports'          => [
+                        '53:53/udp',
                     ],
                     // 'expose' => ['53']
                 ],
-            ]
+            ],
+            'volumes'  => [
+                'lancache-autofill' => [],
+            ],
         ];
 
         $elements = $this
@@ -239,33 +268,34 @@ class DockerService
 
             $dockerCompose['volumes']['vol_' . $vmId] = [];
             $dockerCompose['services']['ser_' . $vmId] = [
-                'image' => 'steamcache/monolithic:latest',
+                'image'          => 'steamcache/monolithic:latest',
                 'container_name' => $cachedElement->getDockerName(),
-                'environment' => [
+                'environment'    => [
                     'PUID=1000',
                     'PGID=1000',
                     'TZ=' . date_default_timezone_get(),
                 ],
-                'volumes' => [
+                'volumes'        => [
                     'vol_' . $vmId . ':/data',
                 ],
-                'depends_on' => [
-                    'cache-proxy-service'
+                'depends_on'     => [
+                    'cache-proxy-service',
+                    'lancache-autofill',
                 ],
-                'restart' => 'unless-stopped',
+                'restart'        => 'unless-stopped',
                 // 'ports' => [
                 //     $cachedElement->getDockerPort()  . ':80'
                 // ],
-                'expose' => [
-                    '80'
+                'expose'         => [
+                    '80',
                     // $cachedElement->getDockerPort()
-                ]
+                ],
             ];
         }
 
         file_put_contents(
             $this->dockerComposeFile,
-            Yaml::dump($dockerCompose, 4)
+            Yaml::dump($dockerCompose, Yaml::PARSE_CONSTANT)
         );
 
         return array_keys($dockerCompose['services']);

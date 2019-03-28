@@ -1,5 +1,23 @@
 version: '3.3'
 services:
+    lancache-autofill:
+        image: 'ubuntu:18.10'
+        container_name: cache-lancache-autofill
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/Berlin
+            - DOWNLOADS_DIRECTORY=/data
+            - STEAMCMD_PATH=/usr/games/steam/steamcmd.sh
+            - DEFAULT_STEAM_USER=steamIPME
+            - DEBIAN_FRONTEND=noninteractive
+            - DEBCONF_NONINTERACTIVE_SEEN=true
+        command: 'bash /scripts/bootstrap.sh'
+        volumes:
+            - 'lancache-autofill:/data'
+            - './overlays/lancache/scripts:/scripts'
+        ports:
+            - '8000:80'
     cache-proxy-service:
         image: nginx
         container_name: cache-proxy-service
@@ -14,21 +32,24 @@ services:
             - STEAMCACHE_IP=192.168.1.34
         depends_on:
             - cache-proxy-service
+            - lancache-autofill
         ports:
             - '53:53/udp'
-    ser_b574f08e6762de6cd29c7508e28a29e6:
+    ser_a8abb4bb284b5b27aa7cb790dc20f80b:
         image: 'steamcache/monolithic:latest'
-        container_name: cache-steam-49610
+        container_name: cache-steam-440
         environment:
             - PUID=1000
             - PGID=1000
             - TZ=Europe/Berlin
         volumes:
-            - 'vol_b574f08e6762de6cd29c7508e28a29e6:/data'
+            - 'vol_a8abb4bb284b5b27aa7cb790dc20f80b:/data'
         depends_on:
             - cache-proxy-service
+            - lancache-autofill
         restart: unless-stopped
         expose:
             - '80'
 volumes:
-    vol_b574f08e6762de6cd29c7508e28a29e6: {  }
+    lancache-autofill: {  }
+    vol_a8abb4bb284b5b27aa7cb790dc20f80b: {  }

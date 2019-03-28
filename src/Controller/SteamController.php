@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\SteamService;
+use App\Service\SteamCmdService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,5 +55,17 @@ class SteamController extends AbstractController
         return new JsonResponse([
             $status
         ]);
+    }
+
+    /**
+     * @Route("/steam/search", name="steam_search")
+     */
+    public function search(Request $request, SteamCmdService $steamCmdService)
+    {
+        $result = $steamCmdService->searchApps($request->get("q"));
+        var_dump($result);
+        die;
+
+        return new JsonResponse($result);
     }
 }
