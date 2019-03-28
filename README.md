@@ -6,6 +6,7 @@
 * [Introduction](#introduction)
 * [Installation](#installation)
 * [How to](#how-to)
+    - [Commands](#commands)
 * [Tests](#tests)
     - [Travis](#travis)
         - [Get Started](#get-started)
@@ -28,7 +29,7 @@ It means that when you will download your game for the time with your internet, 
 * [Docker](https://hub.docker.com/r/steamcache/monolithic) - The containers software we used.
 * [Symfony](https://symfony.com/) - PHP Framework.
 * [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD) - Command-line version of the Steam client.
-* [Heroku](https://devcenter.heroku.com/categories/reference) - Platform as a Service (Paas).
+* [Heroku](https://devcenter.heroku.com/categories/reference) - Platform as a Service (PaaS).
 * [Travis](https://docs.travis-ci.com/) - CI service.
 
 
@@ -38,24 +39,24 @@ It means that when you will download your game for the time with your internet, 
 
 Update the *apt* package index.
 
-```bash
+```shell
 $ sudo apt-get update
 ```
 Install the latest version of *Docker CE* and *containerd*.
 
-```bash
+```shell
 $ sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
 Clone the repository :
 
-```bash
+```shell
 $ sudo git clone https://github.com/faquenalex/ipme-sc-gui.git
 ```
 
 Then you have to build the dockerfile download to install all the dependencies needed :
 
-```bash
+```shell
 $ sudo docker build name_file
 ```
 
@@ -63,10 +64,13 @@ $ sudo docker build name_file
 
 Set the default settings to be used when downloading your games.
 
-```bash
+```shell
 $ nano .env
 ```
  You can check the file .env.test to help you set it up.
+
+
+ ### Commands
 
 ## Tests
 
@@ -92,7 +96,7 @@ Let's get started with Travis CI :
 
 Here an example for our application :
 
-```bash
+```yml
 language: php
 
 php:
@@ -130,10 +134,10 @@ Heroku is a platform as a service (PaaS) that enables developers to build, run, 
 Here a quick tutorial to be able to use Heroku :
 
  1- Sign up on https://www.heroku.com/ \
- 2- Create a new app.
- 3- Go to Deploy and add a deployment method like GitHub, that's what we did.
- 4- Connect to GitHub to enable code diffs and deploys.
- 5- After that, go to Deploy and set it up if you want your deployment to be automatic or not by branch.
+ 2- Create a new app. \
+ 3- Go to Deploy and add a deployment method like GitHub, that's what we did. \
+ 4- Connect to GitHub to enable code diffs and deploys. \
+ 5- After that, go to Deploy and set it up if you want your deployment to be automatic or not by branch. \
  6- Finally, go to settings and add buildpacks that correspond with the language you use.
 
 A brief description of the differents tabs :
@@ -146,10 +150,42 @@ A brief description of the differents tabs :
 - Access : If you want collaborator to have access of your app.
 - Settings : Setting of your app.
 
+Now that you have done all of this you have go configure a procfile.
 
 #### Procfile
 
+Heroku apps include a Procfile that specifies the commands that are executed by the app on startup.
+You can use Procfile to declare a variety of process types like your app's web server. So you can test your application on the web.
+Procfile is always a simple text file that is named *procfile* without an extension. It must be in your app's root directory.
+
+To see more about how to configure your procfile, follow the [official](https://devcenter.heroku.com/articles/procfile) doc.
+
+Here an example from our app :
+
+```
+web: $(composer config bin-dir)/heroku-php-apache2 public
+```
+
+We declare a web server process for our app that will point on the repertory public and its files.
+When it's done, we are able to see our app when we click on *Open App* at the right top of our dashboard.
+
+In the *settings* tab, we can add environment variables.
+
 #### Config Vars
+
+A single app always runs a lot of environments.
+Using the Heroku Dashboard, you can edit config vars from your app's Settings tab :
+![alt text](https://image.prntscr.com/image/CN9Fa7taRMiVwx9G4DrZRQ.png)
+
+It is easier and let you see all the environments you are using.
+
+You will need at least four vars :
+
+- MYSQL_DATABASE - name of the DB.
+- MYSQL_USER -  username.
+- MYSQL_PASSWORD - password.
+- MYSQL_URL - url to connect to the DB.
+
 
 ## Thanks
 
