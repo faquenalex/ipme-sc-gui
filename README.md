@@ -1,5 +1,8 @@
 # STEAM CACHE 
 
+DO NOT USE IT !
+Project still going.
+
 ## Table of Contents
 
 * [Table of contents](#table-of-contents)
