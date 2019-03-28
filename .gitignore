@@ -14,5 +14,5 @@
 ###< symfony/phpunit-bridge ###
 
 ### Fab
-/generated/
+/generated/docker-compose.yml
 ###
