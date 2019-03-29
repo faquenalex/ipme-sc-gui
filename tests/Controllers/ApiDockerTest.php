@@ -4,7 +4,7 @@ namespace Tests\Controllers;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class DockerTest extends WebTestCase
+class ApiDockerTest extends WebTestCase
 {
     /**
      * @var Client
@@ -32,8 +32,7 @@ class DockerTest extends WebTestCase
 
     public function urlProvider()
     {
-        yield ['/docker'];
-        yield ['/docker/health'];
+        yield ['steam'];
     }
 
 }

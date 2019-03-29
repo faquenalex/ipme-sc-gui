@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Service;
-use Monolog\Logger;
-use Monolog\Handler\ErrorLogHandler;
+
 use Monolog\Handler\StreamHandler;
-use Symfony\Component\Process\Process;
+use Monolog\Logger;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class ShellService
 {
@@ -14,37 +13,39 @@ class ShellService
      */
     private $logger;
 
+    /**
+     * @return null
+     */
     public function __construct()
     {
         $this->logger = new Logger(self::class);
         $this->logger->pushHandler(new StreamHandler('php://stderr'));
 
-        $process = new Process('echo $PATH');
-        $process->run();
-        $this->logger->debug("Output : " . $process->getOutput());
-
         return;
     }
 
     /**
+     *
      * Execute shell command
      *
-     * @param  string $command Command to execute
-     * @return string
+     * @param  string         $binary
+     * @param  array          $args
+     * @param  bool|boolean   $autoParse
+     * @return string|array
      */
     public function execute(string $binary, array $args = []): string
     {
         array_unshift($args, $binary);
 
         $process = new Process($args);
-        $this->logger->info("Running : " . $process->getCommandLine());
+        // $this->logger->info("Running : " . $process->getCommandLine());
         $process->run();
 
-        if (! $process->isSuccessful()) {
+        if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 
-        $this->logger->debug("Output : " . $process->getOutput());
+        // $this->logger->debug("Output : " . $process->getOutput());
 
         return $process->getOutput();
     }

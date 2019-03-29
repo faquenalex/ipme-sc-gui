@@ -1,16 +1,13 @@
 <?php
-
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Service;
-use App\Entity\CachedElement;
 use App\Service\DockerService;
+use App\Service\ShellService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DockerController extends AbstractController
 {
@@ -19,26 +16,7 @@ class DockerController extends AbstractController
      */
     public function index(DockerService $dockerService)
     {
-        return new JsonResponse(
-            $dockerService->getContainers()
-        );
-    }
-    /**
-     * @Route("/docker/health", name="docker_status")
-     * @param  DockerService $dockerService
-     * @return JsonResponse
-     */
-    public function health(DockerService $dockerService)
-    {
-        $containers = $dockerService->getContainers();
-
-        return new JsonResponse(
-            [
-                'docker_status' => $dockerService->execute("docker info"),
-                'containers_names' => $containers,
-                'container_count' => count($containers),
-            ]
-        );
+        return new JsonResponse($dockerService->getContainers());
     }
 
     /**
@@ -50,8 +28,23 @@ class DockerController extends AbstractController
         $dockerService->generateDockerCompose();
         $dockerService->dockerComposeUp();
 
-        return new JsonResponse(
-            $dockerService->getContainers()
+        return new JsonResponse($dockerService->getContainers());
+    }
+
+    /**
+     * @Route("/docker/health", name="docker_status")
+     * @param  DockerService  $dockerService
+     * @return JsonResponse
+     */
+    public function health(ShellService $shellService, DockerService $dockerService)
+    {
+        $containers = $dockerService->getContainers();
+
+        return new JsonResponse([
+            'docker_status'    => $shellService->execute("docker", ["info"]),
+            'containers' => $containers,
+            'container_count'  => count($containers),
+        ]
         );
     }
 }

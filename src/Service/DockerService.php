@@ -55,12 +55,26 @@ class DockerService
     }
 
     /**
-     * Get all containers name's
+     * Get all containers infos
      * @return array[string]
      */
     public function getContainers()
     {
-        $cmdResult = preg_split(
+        $containers = [];
+
+        foreach ($this->getContainersID() as $key => $value) {
+            $containers[$key] = $this->getContainerInfo($value, 'id');
+        }
+
+        return $containers;
+    }
+
+    /**
+     * @return array[string]
+     */
+    public function getContainersID(): array
+    {
+        return array_filter(preg_split(
             "/[\s]+/",
             $this->shell->execute(
                 "docker",
@@ -71,9 +85,45 @@ class DockerService
                     "name=cache-",
                 ]
             )
+        ));
+    }
+
+    /**
+     * @todo find a way to remove last \n at end of $cmd / Trim won't work
+     * @param  string          $identifier container identifier
+     * @return array[string]
+     */
+    public function getContainerInfo(string $identifier, string $key = "name")
+    {
+        $keys = [
+            'ID',
+            'Image',
+            'Mounts',
+            'Networks',
+            'Size',
+            'Ports',
+            'CreatedAt',
+            'Status',
+        ];
+        $cmd = $this->shell->execute(
+            "docker",
+            [
+                'ps',
+                '-aq',
+                '--filter',
+                $key . '=' . $identifier,
+                '--format',
+                "{{ " . implode("}}---{{", array_map(function ($b) {return "." . $b;}, $keys)) . " }}",
+            ]
         );
 
-        return array_filter(
+        $cmdResult = preg_split(
+            "/\-{3}+/",
+            $cmd
+        );
+
+        return array_combine(
+            array_map("strtolower", $keys),
             $cmdResult
         );
     }
@@ -114,7 +164,7 @@ class DockerService
      */
     public function startContainers()
     {
-        foreach ($this->getContainers() as $key => $containerName) {
+        foreach ($this->getContainersID() as $key => $containerName) {
             $this->startContainer($containerName);
         }
     }
@@ -125,7 +175,7 @@ class DockerService
      */
     public function stopContainers()
     {
-        foreach ($this->getContainers() as $key => $containerName) {
+        foreach ($this->getContainersID() as $key => $containerName) {
             $this->stopContainer($containerName);
         }
     }
@@ -155,7 +205,7 @@ class DockerService
      */
     public function flushContainersCaches()
     {
-        foreach ($this->getContainers() as $key => $containerName) {
+        foreach ($this->getContainersID() as $key => $containerName) {
             $this->flushContainerCache($containerName);
         }
     }
@@ -178,7 +228,7 @@ class DockerService
      */
     public function removeContainers()
     {
-        foreach ($this->getContainers() as $key => $containerName) {
+        foreach ($this->getContainersID() as $key => $containerName) {
             $this->removeContainer($containerName);
         }
 
@@ -213,9 +263,9 @@ class DockerService
                         'lancache-autofill:/data',
                         './overlays/lancache/scripts:/scripts',
                     ],
-                    'ports' => [
-                        '8000:80'
-                    ]
+                    'ports'          => [
+                        '8000:80',
+                    ],
                 ],
                 'cache-proxy-service' => [
                     'image'          => 'nginx',

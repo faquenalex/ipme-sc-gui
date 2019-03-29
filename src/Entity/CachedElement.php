@@ -1,15 +1,12 @@
 <?php
-
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\UniqueConstraint;
-use App\Repository\CachedElementMetadataRepository;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CachedElementRepository")
  */
-class CachedElement
+class CachedElement implements \JsonSerializable
 {
     /**
      * @ORM\Id()
@@ -62,7 +59,7 @@ class CachedElement
      *
      * @var Service
      */
-    private $serviceId ;
+    private $serviceId;
 
     /**
      * @ORM\OneToMany(targetEntity="CachedElementMetadata", mappedBy="CachedElement")
@@ -71,64 +68,102 @@ class CachedElement
      */
     private $metadatas;
 
-    public function getId(): ?int
+    /**
+     * @return mixed
+     */
+    public function getId():  ? int
     {
         return $this->id;
     }
 
-    public function getDockerName(): ?string
+    /**
+     * @return mixed
+     */
+    public function getDockerName() :  ? string
     {
         return $this->dockerName;
     }
 
-    public function setDockerName(string $dockerName): self
+    /**
+     * @param string $dockerName
+     * @return mixed
+     */
+    public function setDockerName(string $dockerName) : self
     {
         $this->dockerName = $dockerName;
 
         return $this;
     }
 
-    public function getName(): ?string
+    /**
+     * @return mixed
+     */
+    public function getName():  ? string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function setName(string $name) : self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getDateUpdate(): ?\DateTimeInterface
+    /**
+     * @return mixed
+     */
+    public function getDateUpdate():  ? \DateTimeInterface
     {
         return $this->dateUpdate;
     }
 
-    public function setDateUpdate(?\DateTimeInterface $dateUpdate): self
+    /**
+     * @param \DateTimeInterface $dateUpdate
+     * @return mixed
+     */
+    public function setDateUpdate( ? \DateTimeInterface $dateUpdate) : self
     {
         $this->dateUpdate = $dateUpdate;
 
         return $this;
     }
 
-    public function getDateCreated(): ?\DateTimeInterface
+    /**
+     * @return mixed
+     */
+    public function getDateCreated() :  ? \DateTimeInterface
     {
         return $this->dateCreated;
     }
 
-    public function setDateCreated(?\DateTimeInterface $dateCreated): self
+    /**
+     * @param \DateTimeInterface $dateCreated
+     * @return mixed
+     */
+    public function setDateCreated( ? \DateTimeInterface $dateCreated) : self
     {
         $this->dateCreated = $dateCreated;
 
         return $this;
     }
 
-    public function getService(): Service
+    /**
+     * @return int
+     */
+    public function getService() : int
     {
         return $this->serviceId;
     }
 
+    /**
+     * @param Service $service
+     * @return mixed
+     */
     public function setService(Service $service): self
     {
         $this->serviceId = $service->getId();
@@ -145,14 +180,27 @@ class CachedElement
     }
 
     /**
-     * @param int $dockerPort
-     *
+     * @param  int    $dockerPort
      * @return self
      */
-    public function setDockerPort(?int $dockerPort)
+    public function setDockerPort( ? int $dockerPort)
     {
         $this->dockerPort = (int) $dockerPort;
 
         return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id'           => $this->getId(),
+            'docker_name'  => $this->getDockerName(),
+            'name'         => $this->getName(),
+            'date_update'  => $this->getDateUpdate(),
+            'date_created' => $this->getDateCreated(),
+            'docker_port'  => $this->getDockerPort(),
+            // 'service'   => $this->getService(),
+            // 'metadatas'    => $this->getMetadatas(),
+        ];
     }
 }

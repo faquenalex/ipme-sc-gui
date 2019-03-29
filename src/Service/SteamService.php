@@ -1,19 +1,16 @@
 <?php
 namespace App\Service;
 
-use Symfony\Component\Yaml\Yaml;
-use App\Entity\Service;
 use App\Entity\CachedElement;
-use App\Entity\CachedElementMetadata;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Service;
 use App\Service\DockerService;
-use Monolog\Logger;
+use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class SteamService
 {
-
     /**
      * For naming containers
      * @var string
@@ -40,6 +37,11 @@ class SteamService
      */
     private $logger;
 
+    /**
+     * @param EntityManagerInterface $EntityManager
+     * @param DockerService          $docker
+     * @param KernelInterface        $appKernel
+     */
     public function __construct(EntityManagerInterface $EntityManager, DockerService $docker, KernelInterface $appKernel)
     {
         $this->entityManager = $EntityManager;
@@ -51,15 +53,24 @@ class SteamService
     }
 
     /**
-     * @param string       $steamId
-     * @param bool|boolean $forceDownload
-     *
      * @todo STEAMCMD
-     *
+     * @param  string       $steamId
+     * @param  bool|boolean $forceDownload
      * @return bool|boolean Result
      */
     public function addGameBySteamId(string $steamId, bool $forceDownload = false)
     {
+        $this->logger->info("Try to add game with id '" . $steamId . "'");
+        $cachedElement = $this->entityManager
+                              ->getRepository(CachedElement::class)
+                              ->findOneByName($steamId);
+
+        if (!is_null($cachedElement)) {
+            $this->logger->info("Game already exist");
+
+            return true;
+        }
+
         $game = new CachedElement();
 
         $game->setName($steamId);
@@ -69,7 +80,9 @@ class SteamService
             $this->entityManager->getRepository(Service::class)->findOneByName("Steam")
         );
 
-        $maxPort = $this->entityManager->getRepository(CachedElement::class)->findMaxPort();
+        $maxPort = $this->entityManager
+                        ->getRepository(CachedElement::class)
+                        ->findMaxPort();
         $game->setDockerPort(
             is_null($maxPort) ? 8080 : ((int) ($maxPort)) + 1
         );
@@ -80,45 +93,39 @@ class SteamService
         $this->logger->info("Game added. ID:" . $steamId, [Logger::INFO]);
 
         $this->docker->generateDockerCompose();
-        $this->docker->restartContainers();
-        $this->docker->dockerComposeUp();
-
-        // shell_exec("steamCMD")
 
         return true;
     }
 
     /**
-     * @param  string $steamId
-     * @return  bool|boolean
+     * @param  int         $steamId
+     * @return bool|boolean
      */
-    public function removeGameById(string $steamId)
+    public function removeGameById(int $steamId)
     {
         $cachedElement = $this->entityManager
-            ->getRepository(CachedElement::class)->findOneByName($steamId);
+                              ->getRepository(CachedElement::class)
+                              ->findOneByName($steamId);
 
-        if ($cachedElement) {
-            $this->entityManager->remove($cachedElement);
-            $this->entityManager->flush();
-
-            $this->docker->generateDockerCompose();
-            $this->docker->restartContainers();
-            $this->docker->dockerComposeUp();
-
+        if (is_null($cachedElement)) {
+            return false;
         }
-        // shell_exec(steamCMD)
+
+        $this->entityManager->remove($cachedElement);
+        $this->entityManager->flush();
+
+        $this->docker->generateDockerCompose();
 
         return true;
     }
 
     /**
-     * [getCachedElements description]
      * @return array[CachedElement]
      */
     public function getCachedElements(): array
     {
         return $this->entityManager
-            ->getRepository(CachedElement::class)
-            ->findBy([], ['name' => 'ASC']);
+                    ->getRepository(CachedElement::class)
+                    ->findBy([], ['name' => 'ASC']);
     }
 }

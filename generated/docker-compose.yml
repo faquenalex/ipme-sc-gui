@@ -35,21 +35,5 @@ services:
             - lancache-autofill
         ports:
             - '53:53/udp'
-    ser_a8abb4bb284b5b27aa7cb790dc20f80b:
-        image: 'steamcache/monolithic:latest'
-        container_name: cache-steam-440
-        environment:
-            - PUID=1000
-            - PGID=1000
-            - TZ=Europe/Berlin
-        volumes:
-            - 'vol_a8abb4bb284b5b27aa7cb790dc20f80b:/data'
-        depends_on:
-            - cache-proxy-service
-            - lancache-autofill
-        restart: unless-stopped
-        expose:
-            - '80'
 volumes:
     lancache-autofill: {  }
-    vol_a8abb4bb284b5b27aa7cb790dc20f80b: {  }

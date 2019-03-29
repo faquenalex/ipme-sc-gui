@@ -15,7 +15,6 @@ apt-get install -y \
     php-sqlite3 \
     php \
     expect \
-    lib32ncurses5 \
     ;
 
 a2enmod rewrite;
@@ -41,10 +40,13 @@ cat > /etc/apache2/sites-available/000-default.conf << EOF
 </VirtualHost>
 EOF
 
-service apache2 reload;
 rm -rf /var/www/html/*
+
+mkdir -p /var/www/html/;
 git clone https://github.com/Fabioune/lancache-autofill.git /var/www/html;
 
 cd /var/www/html && ./install.sh;
 
-tail -f /var/log/apache2/error.log /var/log/apache2/access.log
+tail -f /var/log/apache2/error.log /var/log/apache2/access.log;
+
+service apache2 restart;
