@@ -61,11 +61,6 @@ echo DOWNLOADS_DIRECTORY="$DOWNLOADS_DIRECTORY" >> ".env";
 echo STEAMCMD_PATH="$STEAMCMD_PATH" >> ".env";
 echo DEFAULT_STEAM_USER="$DEFAULT_STEAM_USER" >> ".env";
 
-cd $SCRIPT_DIR && ./lancache-autofill app:initialise-database
-
-cd $SCRIPT_DIR && ./lancache-autofill steam:update-app-list
-
-cd $SCRIPT_DIR && ./lancache-autofill steam:authorise-account $DEFAULT_STEAM_USER
 
 chown www-data:www-data -R /var/www/html;
 chmod 0777 -R /var/www/html/*;
