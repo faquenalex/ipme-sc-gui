@@ -49,8 +49,6 @@ EOF
 rm -rf /var/www/html/
 
 mkdir -p /var/www/html/
-chown www-data:www-data -R /var/www/html
-chmod 0777 -R /var/www/html/
 
 git clone https://github.com/Fabioune/lancache-autofill.git /var/www/html
 
@@ -63,12 +61,14 @@ mkdir -p /usr/games/steam && cd /usr/games/steam && curl -sqL "http://media.stea
 printf "${GREEN}Creating database file${BLACK}\n"
 cd $SCRIPT_DIR && touch "database.sqlite"
 
-
 printf "${GREEN}Creating your enviroment file${BLACK}\n"
 echo > ".env"
 echo DOWNLOADS_DIRECTORY="$DOWNLOADS_DIRECTORY" >> ".env"
 echo STEAMCMD_PATH="$STEAMCMD_PATH" >> ".env"
 echo DEFAULT_STEAM_USER="$DEFAULT_STEAM_USER" >> ".env"
+
+chown www-data:www-data -R /var/www/html
+chmod 0777 -R /var/www/html/
 
 service apache2 restart
 
