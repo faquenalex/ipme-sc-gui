@@ -23,7 +23,7 @@ class SteamController extends AbstractController
      * @Route("/api/steam/{id}", name="api_steam_post", methods="post")
      * @param  Request        $request
      * @param  SteamService   $steamService
-     * @param  int            $id   Steam id
+     * @param  int            $id             Steam id
      * @return JsonResponse
      */
     public function post(Request $request, SteamService $steamService, int $id)
@@ -48,7 +48,7 @@ class SteamController extends AbstractController
     }
 
     /**
-     * @Route("/api/steam/search", name="api_steam_search", methods="get")
+     * @Route("/api/steam/search/", name="api_steam_search", methods="get")
      * @param  Request         $request
      * @param  SteamCmdService $steamCmdService
      * @return JsonResponse

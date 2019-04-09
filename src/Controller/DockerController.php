@@ -6,6 +6,7 @@ use App\Service\DockerService;
 use App\Service\ShellService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,10 +23,19 @@ class DockerController extends AbstractController
     /**
      * @Route("/docker/regenerate-docker-compose", name="docker_regenerate-docker-compose")
      */
-    public function regenerateDockerComposeFile(DockerService $dockerService)
+    public function regenerateDockerComposeFile(DockerService $dockerService, Request $request)
     {
-        $dockerService->removeContainers();
-        $dockerService->generateDockerCompose();
+        $services = $dockerService->generateDockerCompose($request->get('dry_run') !== null);
+
+        return new JsonResponse($services);
+    }
+
+    /**
+     * @Route("/docker/docker-compose-up", name="docker-compose-up")
+     */
+    public function dockerComposeUp(DockerService $dockerService)
+    {
+        // $dockerService->removeContainers();
         $dockerService->dockerComposeUp();
 
         return new JsonResponse($dockerService->getContainers());
@@ -41,10 +51,9 @@ class DockerController extends AbstractController
         $containers = $dockerService->getContainers();
 
         return new JsonResponse([
-            'docker_status'    => $shellService->execute("docker", ["info"]),
-            'containers' => $containers,
-            'container_count'  => count($containers),
-        ]
-        );
+            'docker_status'   => $shellService->execute("docker", ["info"]),
+            'containers'      => $containers,
+            'container_count' => count($containers),
+        ]);
     }
 }

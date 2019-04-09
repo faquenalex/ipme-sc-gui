@@ -62,9 +62,9 @@ class SteamCmdService
      * @param  string   $query
      * @return string
      */
-    public function showQueue(string $query): string
+    public function showQueue(): string
     {
-        return $this->sendRequest('show-queue', $query);
+        return $this->sendRequest('show-queue');
     }
 
     /**
@@ -72,9 +72,9 @@ class SteamCmdService
      * @param  string   $query
      * @return string
      */
-    public function startDownloading(string $query): string
+    public function startDownloading(): string
     {
-        return $this->sendRequest('start-downloading', $query);
+        return $this->sendRequest('start-downloading');
     }
 
     /**
@@ -92,12 +92,14 @@ class SteamCmdService
      * @param  string   $query
      * @return string
      */
-    protected function sendRequest(string $target, string $query): string
+    protected function sendRequest(string $target, string $query = ""): string
     {
         $guzzle = new Client();
+        $queryFormated = $query ? "?q=" . urlencode($query) : "";
+
         $response = $guzzle->request(
             'GET',
-            'http://localhost:8000/' . $target . "?q=" . urlencode($query)
+            'http://localhost:8000/' . $target . $queryFormated
         );
 
         return $response->getBody();

@@ -28,6 +28,11 @@ class SteamService
     private $docker;
 
     /**
+     * @var SteamCmdService
+     */
+    private $steamCmdService;
+
+    /**
      * @var KernelInterface
      */
     private $appKernel;
@@ -42,11 +47,16 @@ class SteamService
      * @param DockerService          $docker
      * @param KernelInterface        $appKernel
      */
-    public function __construct(EntityManagerInterface $EntityManager, DockerService $docker, KernelInterface $appKernel)
+    public function __construct(
+        EntityManagerInterface $EntityManager,
+        DockerService $docker,
+        KernelInterface $appKernel,
+        SteamCmdService $steamCmdService)
     {
         $this->entityManager = $EntityManager;
         $this->docker = $docker;
         $this->appKernel = $appKernel;
+        $this->steamCmdService = $steamCmdService;
 
         $this->logger = new Logger(self::class);
         $this->logger->pushHandler(new StreamHandler('php://stderr'));
@@ -91,6 +101,12 @@ class SteamService
         $this->entityManager->flush();
 
         $this->logger->info("Game added. ID:" . $steamId, [Logger::INFO]);
+        $this->logger->info("Send request to lancache-autofill for. ID:" . $steamId, [Logger::INFO]);
+
+        $this->steamCmdService->queueApp($steamId);
+
+        $this->logger->info("Send request to lancache-autofill to download queue");
+        $this->steamCmdService->startDownloading();
 
         $this->docker->generateDockerCompose();
 
@@ -115,6 +131,8 @@ class SteamService
         $this->entityManager->flush();
 
         $this->docker->generateDockerCompose();
+
+        $this->steamCmdService->dequeueApp($steamId);
 
         return true;
     }

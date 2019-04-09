@@ -26,7 +26,12 @@ class DockerService
     /**
      * @var string
      */
-    private $dockerComposeFile;
+    private $dockerComposeFileServers;
+
+    /**
+     * @var string
+     */
+    private $dockerComposeFileCaches;
 
     /**
      * @var Logger
@@ -46,7 +51,8 @@ class DockerService
     {
         $this->entityManager = $entityManager;
         $this->appKernel = $appKernel;
-        $this->dockerComposeFile = $this->appKernel->getProjectDir() . self::GENERATION_DIR . "docker-compose.yml";
+        $this->dockerComposeFileServers = $this->appKernel->getProjectDir() . self::GENERATION_DIR . "servers/docker-compose.yml";
+        $this->dockerComposeFileCaches = $this->appKernel->getProjectDir() . self::GENERATION_DIR . "caches/docker-compose.yml";
 
         $this->shell = new ShellService();
 
@@ -237,17 +243,21 @@ class DockerService
 
     /**
      * Generate docker compose
-     *
+     * @var    bool  $dryRun Only dump data
      * @return array Return names of created machines in docker
      */
-    public function generateDockerCompose(): array
+    public function generateDockerCompose(bool $dryRun = false): array
     {
-        $dockerCompose = [
+        $dockerComposeServers = [
             'version'  => '3.3',
             'services' => [
                 'lancache-autofill'   => [
                     'image'          => 'ubuntu:18.10',
                     'container_name' => 'cache-lancache-autofill',
+                    'networks'       => [
+                        'caches',
+                        'servers',
+                    ],
                     'environment'    => [
                         'PUID=1000',
                         'PGID=1000',
@@ -269,23 +279,27 @@ class DockerService
                 ],
                 'cache-proxy-service' => [
                     'image'          => 'nginx',
-                    // 'image' => 'jwilder/nginx-proxy',
                     'container_name' => 'cache-proxy-service',
-                    // 'environment' => [],
+                    'networks'       => [
+                        'caches',
+                        'servers',
+                    ],
                     'ports'          => [
                         '80:80',
                     ],
                     'volumes'        => [
                         './overlays/cache-proxy-service/etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf',
-                        // '/var/run/docker.sock:/tmp/docker.sock:ro'
                     ],
                 ],
                 'cache-dns-01'        => [
                     'image'          => 'steamcache/steamcache-dns:latest',
                     'container_name' => 'cache-dns-01',
+                    'networks'       => [
+                        'caches',
+                        'servers',
+                    ],
                     'environment'    => [
                         // 'USE_GENERIC_CACHE=true',
-                        // 'LANCACHE_IP=192.168.42.224',
                         // 'LANCACHE_IP=cache-proxy-service',
                         // 'STEAMCACHE_IP=172.19.0.2',
                         'STEAMCACHE_IP=192.168.1.34',
@@ -298,11 +312,14 @@ class DockerService
                     'ports'          => [
                         '53:53/udp',
                     ],
-                    // 'expose' => ['53']
                 ],
             ],
             'volumes'  => [
                 'lancache-autofill' => [],
+            ],
+            'networks' => [
+                'servers' => [],
+                'caches'  => [],
             ],
         ];
 
@@ -313,13 +330,20 @@ class DockerService
                 [],
                 ['name' => 'ASC']
             );
+
+        $dockerComposeCaches = [
+            'version'  => '3.3',
+        ];
+
         foreach ($elements as $key => $cachedElement) {
             $vmId = md5($cachedElement->getName());
 
-            $dockerCompose['volumes']['vol_' . $vmId] = [];
-            $dockerCompose['services']['ser_' . $vmId] = [
+            $dockerComposeCaches['services']['ser_' . $vmId] = [
                 'image'          => 'steamcache/monolithic:latest',
                 'container_name' => $cachedElement->getDockerName(),
+                'networks'       => [
+                    'caches',
+                ],
                 'environment'    => [
                     'PUID=1000',
                     'PGID=1000',
@@ -328,27 +352,49 @@ class DockerService
                 'volumes'        => [
                     'vol_' . $vmId . ':/data',
                 ],
-                'depends_on'     => [
-                    'cache-proxy-service',
-                    'lancache-autofill',
+                'labels'         => [
+                    'steam.id' => $cachedElement->getName(),
                 ],
                 'restart'        => 'unless-stopped',
-                // 'ports' => [
-                //     $cachedElement->getDockerPort()  . ':80'
-                // ],
                 'expose'         => [
                     '80',
-                    // $cachedElement->getDockerPort()
+                ],
+                'networks'       => [
+                    'caches',
+                ],
+            ];
+
+            $dockerComposeCaches['volumes']['vol_' . $vmId] = [];
+            $dockerComposeCaches['networks'] = ['caches' => []];
+        }
+
+        $yamlCache = Yaml::dump($dockerComposeCaches, Yaml::PARSE_CONSTANT);
+        $yamlServers = Yaml::dump($dockerComposeServers, Yaml::PARSE_CONSTANT);
+
+        if ($dryRun) {
+            return [
+                'caches' => [
+                    'target_file' => $this->dockerComposeFileCaches,
+                    'yaml'        => $yamlCache,
+                ],
+                [
+                    'target_file_servers' => $this->dockerComposeFileServers,
+                    'yaml'                => $yamlServers,
                 ],
             ];
         }
 
         file_put_contents(
-            $this->dockerComposeFile,
-            Yaml::dump($dockerCompose, Yaml::PARSE_CONSTANT)
+            $this->dockerComposeFileServers,
+            $yamlServers
         );
 
-        return array_keys($dockerCompose['services']);
+        file_put_contents(
+            $this->dockerComposeFileCaches,
+            $yamlCache
+        );
+
+        return array_keys($dockerComposeCaches['services']);
     }
 
     /**
@@ -363,7 +409,17 @@ class DockerService
             "docker-compose",
             [
                 '-f',
-                $this->dockerComposeFile,
+                $this->dockerComposeFileServers,
+                'up',
+                '-d',
+            ]
+        );
+
+        $this->shell->execute(
+            "docker-compose",
+            [
+                '-f',
+                $this->dockerComposeFileCaches,
                 'up',
                 '-d',
             ]

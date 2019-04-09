@@ -34,6 +34,7 @@ class DockerTest extends WebTestCase
     {
         yield ['/docker'];
         yield ['/docker/health'];
+        yield ['/docker/regenerate-docker-compose?dry_run=true']; // doesn't write file
     }
 
 }
