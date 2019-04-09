@@ -21,8 +21,6 @@ apt-get install -y \
     php \
     expect \
     lib32gcc1 \
-    lib32tinfo5 \
-    lib32stdc++6 \
     ;
 
 a2enmod rewrite;
