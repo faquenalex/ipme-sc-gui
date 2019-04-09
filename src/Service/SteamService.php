@@ -75,6 +75,9 @@ class SteamService
                               ->getRepository(CachedElement::class)
                               ->findOneByName($steamId);
 
+        $this->logger->info("Send request to lancache-autofill for. ID:" . $steamId, [Logger::INFO]);
+        $this->steamCmdService->queueApp($steamId);
+
         if (!is_null($cachedElement)) {
             $this->logger->info("Game already exist");
 
@@ -101,9 +104,6 @@ class SteamService
         $this->entityManager->flush();
 
         $this->logger->info("Game added. ID:" . $steamId, [Logger::INFO]);
-        $this->logger->info("Send request to lancache-autofill for. ID:" . $steamId, [Logger::INFO]);
-
-        $this->steamCmdService->queueApp($steamId);
 
         $this->logger->info("Send request to lancache-autofill to download queue");
         $this->steamCmdService->startDownloading();
@@ -132,7 +132,7 @@ class SteamService
 
         $this->docker->generateDockerCompose();
 
-        $this->steamCmdService->dequeueApp($steamId);
+        $this->steamCmdService->dequeue($steamId);
 
         return true;
     }

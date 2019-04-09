@@ -16,12 +16,21 @@ class SteamCmdController extends AbstractController
     {
         return new JsonResponse($steamCmdService->showQueue());
     }
+
     /**
-     * @Route("/api/steamcmd/add", name="api_steamcmd_add", methods="get")
+     * @Route("/api/steamcmd/add/{id}", name="api_steamcmd_add", methods="get")
      */
-    public function addQueue(SteamCmdService $steamCmdService)
+    public function addQueue(SteamCmdService $steamCmdService, $id)
     {
-        return new JsonResponse($steamCmdService->queueApp(550));
+        return new JsonResponse($steamCmdService->queueApp($id));
+    }
+
+    /**
+     * @Route("/api/steamcmd/download", name="api_steamcmd_download", methods="get")
+     */
+    public function download(SteamCmdService $steamCmdService)
+    {
+        return new JsonResponse($steamCmdService->startDownloading());
     }
 
 
