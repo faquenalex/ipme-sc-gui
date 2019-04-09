@@ -47,6 +47,7 @@ git clone https://github.com/Fabioune/lancache-autofill.git /var/www/html;
 
 cd /var/www/html && ./install.sh;
 
+service apache2 restart;
+
 tail -f /var/log/apache2/error.log /var/log/apache2/access.log;
 
-service apache2 restart;
