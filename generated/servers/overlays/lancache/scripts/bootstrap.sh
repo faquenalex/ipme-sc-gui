@@ -47,8 +47,6 @@ git clone https://github.com/Fabioune/lancache-autofill.git /var/www/html;
 
 cd /var/www/html && ./install.sh;
 
-chown www-data:www-data -R /var/www/html;
-chmod 0660 -R /var/www/html;
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -65,6 +63,9 @@ echo DEFAULT_STEAM_USER="$DEFAULT_STEAM_USER" >> ".env";
 cd $SCRIPT_DIR && ./lancache-autofill app:initialise-database
 
 cd $SCRIPT_DIR && ./lancache-autofill steam:update-app-list
+
+chown www-data:www-data -R /var/www/html;
+chmod 0777 -R /var/www/html/*;
 
 service apache2 restart;
 
